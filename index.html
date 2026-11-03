@@ -291,13 +291,30 @@ function lista(items, {sub='kg', total=null, max=null, comparar=true}={}){
 
 function vHoy(){
   const a=D.ayer, s=D.ayerSemAnt, m=D.mes, c=D.mesAntMismoCorte;
+  const h=D.hoyVenta||{venta:0,kg:0,pz:0}, hs=D.hoySemAnt||{venta:0};
+  const hora=(D.generado||'').slice(11,16);
   const esAyer = a.fecha === isoAyer(D.hoy);
   const avance = D.mesAntCompleto.venta ? Math.min(1, m.venta/D.mesAntCompleto.venta) : 0;
+  const hayHoy = h.venta>0 || h.kg>0;
+  const diaSem = f => DIAS[new Date(f+'T12:00').getDay()];
   return `
   <div class="card">
-    <h2>${esAyer?'Venta de ayer':'Último día con venta'} · ${fecha(a.fecha)}</h2>
-    <div class="big num">${mxn(a.venta)}</div>
-    <div style="margin:8px 0 12px">${delta(a.venta,s.venta)} <span class="sub">vs. ${DIAS[new Date(s.fecha+'T12:00').getDay()]} pasado (${mxnC(s.venta)})</span></div>
+    <h2>Hoy · ${fecha(D.hoy)} · hasta las ${hora}</h2>
+    ${hayHoy ? `
+    <div class="big num">${mxn(h.venta)}</div>
+    <div style="margin:8px 0 12px">${delta(h.venta,hs.venta)} <span class="sub">vs. todo el ${diaSem(hs.fecha)} pasado (${mxnC(hs.venta)})</span></div>
+    <div class="grid3">
+      <div class="kpi"><div class="v num">${fNum.format(Math.round(h.kg))}</div><div class="l">kilos</div></div>
+      <div class="kpi"><div class="v num">${fNum.format(Math.round(h.pz))}</div><div class="l">piezas</div></div>
+      <div class="kpi"><div class="v num">${pct(h.margenPct)}</div><div class="l">margen</div></div>
+    </div>` : `
+    <div class="med" style="color:var(--gris)">Sin facturación todavía</div>
+    <div class="sub" style="margin-top:4px">El ${diaSem(hs.fecha)} pasado se vendieron ${mxnC(hs.venta)} en el día.</div>`}
+  </div>
+  <div class="card">
+    <h2>${esAyer?'Ayer':'Último día cerrado'} · ${fecha(a.fecha)}</h2>
+    <div class="big num" style="font-size:30px">${mxn(a.venta)}</div>
+    <div style="margin:8px 0 12px">${delta(a.venta,s.venta)} <span class="sub">vs. ${diaSem(s.fecha)} pasado (${mxnC(s.venta)})</span></div>
     <div class="grid3">
       <div class="kpi"><div class="v num">${fNum.format(Math.round(a.kg))}</div><div class="l">kilos</div></div>
       <div class="kpi"><div class="v num">${fNum.format(Math.round(a.pz))}</div><div class="l">piezas</div></div>
@@ -306,7 +323,7 @@ function vHoy(){
   </div>
   <div class="card">
     <h2>Acumulado ${mesNombre(m.mes)}</h2>
-    <div class="big num" style="font-size:32px">${mxn(m.venta)}</div>
+    <div class="big num" style="font-size:30px">${mxn(m.venta)}</div>
     <div style="margin:8px 0 4px">${delta(m.venta,c.venta)} <span class="sub">vs. ${MES3[Number(c.mes.split('-')[1])-1]} al mismo día (${mxnC(c.venta)})</span></div>
     <div class="bar"><i style="width:${avance*100}%"></i></div>
     <div class="sub">${fNum1.format(avance*100)} % de lo vendido en todo ${mesNombre(c.mes)} (${mxnC(D.mesAntCompleto.venta)})</div>
@@ -318,8 +335,8 @@ function vHoy(){
     <div class="tip">${m.diasConVenta} días con venta · promedio diario ${mxnC(m.promedioDiario)}</div>
   </div>
   <div class="card">
-    <h2>Quién compró ${esAyer?'ayer':'ese día'}</h2>
-    ${lista(D.clientesAyer,{comparar:true})}
+    <h2>Quién compró ${hayHoy?'hoy':(esAyer?'ayer':'ese día')}</h2>
+    ${lista(hayHoy?(D.clientesHoy||[]):D.clientesAyer,{comparar:true})}
     <div class="tip">La flecha compara contra el mismo día de la semana pasada.</div>
   </div>`;
 }
