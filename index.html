@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#B5121B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ventas Excelsior">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Ventas Excelsior</title>
+<style>
+:root{
+  --crema:#F6EFE3; --crema2:#EFE4D0; --blanco:#FFFFFF;
+  --rojo:#B5121B; --rojo2:#8E0E15; --rojoSuave:#F8E3E3;
+  --verde:#2E7D32; --verdeSuave:#E3F1E4;
+  --tinta:#2B2420; --gris:#7A6F66; --linea:#E6DCC9;
+  --radio:16px; --sombra:0 2px 10px rgba(60,40,20,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+body{min-height:100vh;min-height:100dvh}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+h1,h2,h3{margin:0;font-weight:800}
+button{font:inherit;cursor:pointer}
+
+/* ---------- PIN ---------- */
+#pin{position:fixed;inset:0;background:var(--crema);display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:24px;z-index:50}
+#pin .logo{width:min(260px,70vw);margin-bottom:8px}
+#pin .sub{color:var(--gris);font-size:14px;margin:0 0 22px}
+.dots{display:flex;gap:14px;margin-bottom:26px;height:18px}
+.dots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--rojo);background:transparent;transition:background .12s}
+.dots i.on{background:var(--rojo)}
+.dots.err i{border-color:#C62828;animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pad{display:grid;grid-template-columns:repeat(3,72px);gap:14px}
+.pad button{height:72px;border-radius:50%;border:none;background:var(--blanco);box-shadow:var(--sombra);
+  font-size:28px;font-weight:600;color:var(--tinta)}
+.pad button:active{background:var(--crema2)}
+.pad button.soft{background:transparent;box-shadow:none;font-size:15px;color:var(--gris);font-weight:600}
+#pinmsg{min-height:22px;color:#C62828;font-size:14px;margin-top:16px;font-weight:600}
+label.rec{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--gris);margin-top:14px}
+label.rec input{width:18px;height:18px;accent-color:var(--rojo)}
+
+/* ---------- APP ---------- */
+#app{display:none;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+header{background:var(--rojo);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 18px 14px;
+  border-radius:0 0 22px 22px;box-shadow:0 4px 14px rgba(140,10,20,.25);position:sticky;top:0;z-index:5}
+header .row{display:flex;align-items:center;justify-content:space-between}
+header .brand{font-weight:900;font-size:22px;letter-spacing:.06em;text-transform:uppercase}
+header .brand small{display:block;font-weight:600;font-size:11px;letter-spacing:.14em;opacity:.85}
+header .upd{font-size:11px;opacity:.85;text-align:right;line-height:1.3}
+main{padding:14px 14px 0;max-width:560px;margin:0 auto}
+.view{display:none}.view.on{display:block}
+.card{background:var(--blanco);border-radius:var(--radio);box-shadow:var(--sombra);padding:16px;margin-bottom:12px}
+.card h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gris);margin-bottom:8px}
+.big{font-size:38px;font-weight:900;color:var(--rojo);line-height:1.05}
+.med{font-size:22px;font-weight:800;color:var(--tinta)}
+.sub{font-size:13px;color:var(--gris)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.kpi{background:var(--crema);border-radius:12px;padding:10px 12px}
+.kpi .v{font-size:19px;font-weight:800}
+.kpi .l{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.08em}
+.delta{display:inline-flex;align-items:center;gap:4px;font-weight:800;font-size:14px;padding:4px 10px;border-radius:999px}
+.delta.up{background:var(--verdeSuave);color:var(--verde)}
+.delta.dn{background:var(--rojoSuave);color:#C62828}
+.delta.eq{background:var(--crema2);color:var(--gris)}
+.delta.sm{font-size:12px;padding:2px 8px}
+.bar{height:10px;background:var(--crema2);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--rojo);border-radius:99px}
+.list{margin:0;padding:0;list-style:none}
+.list li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--linea)}
+.list li:last-child{border-bottom:none}
+.list .rk{width:22px;height:22px;border-radius:50%;background:var(--crema2);color:var(--rojo2);font-size:12px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex:none}
+.list .nm{flex:1;min-width:0}
+.list .nm b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list .nm span{font-size:12px;color:var(--gris)}
+.list .amt{text-align:right;flex:none}
+.list .amt b{display:block;font-size:15px}
+.list .amt span{font-size:12px;color:var(--gris)}
+.mini{height:6px;background:var(--crema);border-radius:99px;margin-top:5px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--rojo);border-radius:99px}
+.seg{display:flex;background:var(--crema2);border-radius:12px;padding:4px;margin-bottom:12px}
+.seg button{flex:1;border:none;background:transparent;padding:9px 6px;border-radius:9px;font-weight:700;color:var(--gris);font-size:13px}
+.seg button.on{background:var(--blanco);color:var(--rojo);box-shadow:var(--sombra)}
+svg text{font-family:inherit}
+.leg{display:flex;gap:14px;font-size:12px;color:var(--gris);margin-top:6px}
+.leg i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.alert{display:flex;gap:10px;align-items:flex-start;background:var(--rojoSuave);border-radius:12px;padding:10px 12px;font-size:13px;color:#8E0E15;margin-top:10px}
+.chip{display:inline-block;background:var(--crema);border-radius:8px;padding:3px 8px;font-size:12px;color:var(--gris);margin:2px 4px 2px 0}
+.empty{color:var(--gris);font-size:14px;text-align:center;padding:20px}
+.tip{font-size:12px;color:var(--gris);margin-top:8px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--blanco);border-top:1px solid var(--linea);
+  display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:10}
+nav button{flex:1;border:none;background:transparent;color:var(--gris);font-size:11px;font-weight:700;padding:6px 0 2px;border-radius:10px}
+nav button svg{display:block;margin:0 auto 3px;width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--rojo)}
+#loading{position:fixed;inset:0;background:rgba(246,239,227,.92);display:none;align-items:center;justify-content:center;z-index:40;color:var(--rojo);font-weight:800}
+.foot{text-align:center;color:var(--gris);font-size:11px;padding:10px 0 6px}
+.foot button{background:none;border:none;color:var(--gris);text-decoration:underline;font-size:11px}
+</style>
+</head>
+<body>
+
+<!-- PIN -->
+<div id="pin">
+  <img class="logo" src="logo.png" alt="Excelsior" onerror="this.style.display='none'">
+  <p class="sub">Ventas diarias · Parroli</p>
+  <div class="dots" id="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="pad" id="pad"></div>
+  <div id="pinmsg"></div>
+  <label class="rec"><input type="checkbox" id="rec" checked> Recordar en este teléfono</label>
+</div>
+
+<div id="loading">Cargando ventas…</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="row">
+      <div class="brand">Excelsior<small>Ventas · Parroli</small></div>
+      <div class="upd" id="upd"></div>
+    </div>
+  </header>
+  <main>
+    <section class="view on" id="v-hoy"></section>
+    <section class="view" id="v-mes"></section>
+    <section class="view" id="v-cli"></section>
+    <section class="view" id="v-eq"></section>
+    <div class="foot">Datos de SAP Business One · <button id="salir">Cerrar sesión</button></div>
+  </main>
+  <nav>
+    <button class="on" data-v="hoy"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>Hoy</button>
+    <button data-v="mes"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Mes</button>
+    <button data-v="cli"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15 15.5a5 5 0 016.5 4.5"/></svg>Clientes</button>
+    <button data-v="eq"><svg viewBox="0 0 24 24"><path d="M3 20h18M6 16V9M11 16V4M16 16v-6M21 16v-3"/></svg>Equipo</button>
+  </nav>
+</div>
+
+<script>
+/* =========================================================
+   Ventas Excelsior — app de una sola página (sin librerías)
+   ========================================================= */
+const ARCHIVO = 'datos.enc.json';           // generado por publicar_ventas.py
+const KEY_PIN = 'vx_pin';
+let D = null;
+
+// ---------- formato ----------
+const fMXN = new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0});
+const fNum = new Intl.NumberFormat('es-MX',{maximumFractionDigits:0});
+const fNum1 = new Intl.NumberFormat('es-MX',{maximumFractionDigits:1,minimumFractionDigits:1});
+const mxn = v => fMXN.format(v||0);
+const mxnC = v => { v=v||0; const a=Math.abs(v);
+  if(a>=1e6) return (v<0?'-':'')+'$'+fNum1.format(a/1e6)+' M';
+  if(a>=1e4) return (v<0?'-':'')+'$'+fNum.format(a/1e3)+' k';
+  return mxn(v); };
+const kg = v => fNum.format(Math.round(v||0))+' kg';
+const pz = v => fNum.format(Math.round(v||0))+' pz';
+const pct = v => (v==null?'—':fNum1.format(v*100)+' %');
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const MES3 = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+function fecha(iso){ const [y,m,d]=iso.split('-').map(Number); const dt=new Date(y,m-1,d);
+  return `${DIAS[dt.getDay()]} ${d} de ${MESES[m-1]}`; }
+function mesNombre(ym){ const [y,m]=ym.split('-').map(Number); return `${MESES[m-1]} ${y}`; }
+function delta(act, ant, {small=false, suf=''}={}){
+  if(!ant) return `<span class="delta eq${small?' sm':''}">sin comparativo</span>`;
+  const d=(act-ant)/Math.abs(ant); const cls=d>0.005?'up':d<-0.005?'dn':'eq';
+  const arrow=cls==='up'?'▲':cls==='dn'?'▼':'●';
+  return `<span class="delta ${cls}${small?' sm':''}">${arrow} ${fNum1.format(Math.abs(d)*100)} %${suf}</span>`;
+}
+const esc = s => String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ---------- cifrado (AES-GCM, clave derivada del PIN con PBKDF2) ----------
+const b64 = s => Uint8Array.from(atob(s), c=>c.charCodeAt(0));
+async function descifrar(pkg, pin){
+  const salt=b64(pkg.salt), iv=b64(pkg.iv), ct=b64(pkg.ct);
+  const base=await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:pkg.iter||200000,hash:'SHA-256'}, base,
+    {name:'AES-GCM',length:256}, false, ['decrypt']);
+  const plano=await crypto.subtle.decrypt({name:'AES-GCM',iv}, key, ct);
+  return JSON.parse(new TextDecoder().decode(plano));
+}
+async function cargar(pin){
+  const r=await fetch(ARCHIVO+'?t='+Date.now(),{cache:'no-store'});
+  if(!r.ok) throw new Error('No se encontró el archivo de datos ('+r.status+').');
+  const pkg=await r.json();
+  try{ return await descifrar(pkg, pin); }
+  catch(e){ const err=new Error('PIN incorrecto'); err.pin=true; throw err; }
+}
+
+// ---------- PIN ----------
+let buf='';
+const dots=document.getElementById('dots'), pad=document.getElementById('pad'), pinmsg=document.getElementById('pinmsg');
+['1','2','3','4','5','6','7','8','9','borrar','0','ok'].forEach(k=>{
+  const b=document.createElement('button');
+  if(k==='borrar'){b.textContent='⌫';b.className='soft';}
+  else if(k==='ok'){b.textContent='Entrar';b.className='soft';}
+  else b.textContent=k;
+  b.onclick=()=>tecla(k); pad.appendChild(b);
+});
+function pintar(){ [...dots.children].forEach((d,i)=>d.classList.toggle('on',i<buf.length)); }
+function tecla(k){
+  pinmsg.textContent='';
+  if(k==='borrar'){buf=buf.slice(0,-1);pintar();return;}
+  if(k==='ok'){ if(buf.length>=4) entrar(buf); return; }
+  if(buf.length<6){buf+=k;pintar(); if(buf.length===6) entrar(buf);}
+}
+document.addEventListener('keydown',e=>{ if(document.getElementById('pin').style.display==='none')return;
+  if(/^[0-9]$/.test(e.key)) tecla(e.key); else if(e.key==='Backspace') tecla('borrar'); else if(e.key==='Enter') tecla('ok'); });
+async function entrar(pin){
+  const load=document.getElementById('loading'); load.style.display='flex';
+  try{
+    D=await cargar(pin);
+    try{ if(document.getElementById('rec').checked) localStorage.setItem(KEY_PIN,pin); }catch(_){}
+    document.getElementById('pin').style.display='none';
+    document.getElementById('app').style.display='block';
+    render();
+  }catch(e){
+    buf=''; pintar(); dots.classList.add('err'); setTimeout(()=>dots.classList.remove('err'),400);
+    pinmsg.textContent= e.pin ? 'PIN incorrecto' : e.message;
+    try{ if(e.pin) localStorage.removeItem(KEY_PIN); }catch(_){}
+  } finally { load.style.display='none'; }
+}
+document.getElementById('salir').onclick=()=>{ try{localStorage.removeItem(KEY_PIN);}catch(_){} location.reload(); };
+(function auto(){ let p=null; try{p=localStorage.getItem(KEY_PIN);}catch(_){} if(p) entrar(p); })();
+
+// ---------- navegación ----------
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+b.dataset.v));
+  window.scrollTo({top:0});
+});
+
+// ---------- gráficas SVG ----------
+function barras(serieAct, serieAnt, {alto=170}={}){
+  // serieAct/serieAnt: [{dia, venta}]; eje x = día del mes 1..31
+  const W=520, H=alto, padL=8, padR=8, padT=14, padB=22;
+  const dias=31, bw=(W-padL-padR)/dias;
+  const max=Math.max(1,...serieAct.map(s=>s.venta),...serieAnt.map(s=>s.venta));
+  const y=v=>padT+(H-padT-padB)*(1-v/max);
+  const mapAnt={}; serieAnt.forEach(s=>mapAnt[s.dia]=s.venta);
+  const mapAct={}; serieAct.forEach(s=>mapAct[s.dia]=s.venta);
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" aria-label="Venta diaria">`;
+  // mes anterior: barras suaves
+  for(let d=1;d<=dias;d++){ const v=mapAnt[d]; if(!v) continue;
+    out+=`<rect x="${padL+(d-1)*bw+1}" y="${y(v)}" width="${bw-2}" height="${H-padB-y(v)}" rx="2" fill="#E6DCC9"/>`; }
+  // mes actual: rojo
+  for(let d=1;d<=dias;d++){ const v=mapAct[d]; if(!v) continue;
+    out+=`<rect x="${padL+(d-1)*bw+1}" y="${y(v)}" width="${bw-2}" height="${H-padB-y(v)}" rx="2" fill="#B5121B"/>`; }
+  // eje
+  for(let d=1;d<=dias;d+=5) out+=`<text x="${padL+(d-0.5)*bw}" y="${H-6}" font-size="11" fill="#7A6F66" text-anchor="middle">${d}</text>`;
+  out+=`<text x="${padL}" y="10" font-size="10" fill="#7A6F66">máx ${mxnC(max)}</text></svg>`;
+  return out;
+}
+function lineaMeses(meses){
+  const W=520,H=150,padL=8,padR=8,padT=16,padB=22;
+  const n=meses.length; if(n<2) return '';
+  const max=Math.max(...meses.map(m=>m.venta)), min=0;
+  const x=i=>padL+(W-padL-padR)*i/(n-1), y=v=>padT+(H-padT-padB)*(1-(v-min)/(max-min||1));
+  const pts=meses.map((m,i)=>`${x(i)},${y(m.venta)}`).join(' ');
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">`;
+  out+=`<polygon points="${x(0)},${H-padB} ${pts} ${x(n-1)},${H-padB}" fill="#F8E3E3"/>`;
+  out+=`<polyline points="${pts}" fill="none" stroke="#B5121B" stroke-width="3" stroke-linejoin="round"/>`;
+  meses.forEach((m,i)=>{ out+=`<circle cx="${x(i)}" cy="${y(m.venta)}" r="${i===n-1?5:3.5}" fill="${i===n-1?'#2E7D32':'#B5121B'}"/>`;
+    if(i%2===n%2 || i===n-1){ const mm=Number(m.mes.split('-')[1]); out+=`<text x="${x(i)}" y="${H-6}" font-size="11" fill="#7A6F66" text-anchor="middle">${MES3[mm-1]}</text>`; }
+  });
+  out+=`<text x="${x(n-1)}" y="${y(meses[n-1].venta)-10}" font-size="11" font-weight="700" fill="#2E7D32" text-anchor="end">${mxnC(meses[n-1].venta)}</text>`;
+  return out+'</svg>';
+}
+
+// ---------- vistas ----------
+function lista(items, {sub='kg', total=null, max=null, comparar=true}={}){
+  if(!items||!items.length) return '<div class="empty">Sin datos</div>';
+  const mx = max ?? Math.max(...items.map(i=>i.venta));
+  return `<ul class="list">`+items.map((it,i)=>`
+    <li><span class="rk">${i+1}</span>
+      <div class="nm"><b>${esc(it.nombre)}</b>
+        <span>${sub==='kg'?kg(it.kg)+' · '+pz(it.pz):''}${sub==='margen'?'margen '+pct(it.margenPct):''}${total?' · '+fNum1.format(it.venta/total*100)+' % del total':''}</span>
+        <div class="mini"><i style="width:${Math.max(2,it.venta/mx*100)}%"></i></div>
+      </div>
+      <div class="amt"><b class="num">${mxnC(it.venta)}</b>${comparar?delta(it.venta,it.ventaMesAnt,{small:true}):`<span>${pct(it.margenPct)}</span>`}</div>
+    </li>`).join('')+'</ul>';
+}
+
+function vHoy(){
+  const a=D.ayer, s=D.ayerSemAnt, m=D.mes, c=D.mesAntMismoCorte;
+  const esAyer = a.fecha === isoAyer(D.hoy);
+  const avance = D.mesAntCompleto.venta ? Math.min(1, m.venta/D.mesAntCompleto.venta) : 0;
+  return `
+  <div class="card">
+    <h2>${esAyer?'Venta de ayer':'Último día con venta'} · ${fecha(a.fecha)}</h2>
+    <div class="big num">${mxn(a.venta)}</div>
+    <div style="margin:8px 0 12px">${delta(a.venta,s.venta)} <span class="sub">vs. ${DIAS[new Date(s.fecha+'T12:00').getDay()]} pasado (${mxnC(s.venta)})</span></div>
+    <div class="grid3">
+      <div class="kpi"><div class="v num">${fNum.format(Math.round(a.kg))}</div><div class="l">kilos</div></div>
+      <div class="kpi"><div class="v num">${fNum.format(Math.round(a.pz))}</div><div class="l">piezas</div></div>
+      <div class="kpi"><div class="v num">${pct(a.margenPct)}</div><div class="l">margen</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Acumulado ${mesNombre(m.mes)}</h2>
+    <div class="big num" style="font-size:32px">${mxn(m.venta)}</div>
+    <div style="margin:8px 0 4px">${delta(m.venta,c.venta)} <span class="sub">vs. ${MES3[Number(c.mes.split('-')[1])-1]} al mismo día (${mxnC(c.venta)})</span></div>
+    <div class="bar"><i style="width:${avance*100}%"></i></div>
+    <div class="sub">${fNum1.format(avance*100)} % de lo vendido en todo ${mesNombre(c.mes)} (${mxnC(D.mesAntCompleto.venta)})</div>
+    <div class="grid3" style="margin-top:12px">
+      <div class="kpi"><div class="v num">${fNum.format(Math.round(m.kg/1000*10)/10)} t</div><div class="l">${fNum.format(Math.round(m.kg))} kg</div></div>
+      <div class="kpi"><div class="v num">${fNum.format(Math.round(m.pz))}</div><div class="l">piezas</div></div>
+      <div class="kpi"><div class="v num">${pct(m.margenPct)}</div><div class="l">margen</div></div>
+    </div>
+    <div class="tip">${m.diasConVenta} días con venta · promedio diario ${mxnC(m.promedioDiario)}</div>
+  </div>
+  <div class="card">
+    <h2>Quién compró ${esAyer?'ayer':'ese día'}</h2>
+    ${lista(D.clientesAyer,{comparar:true})}
+    <div class="tip">La flecha compara contra el mismo día de la semana pasada.</div>
+  </div>`;
+}
+function isoAyer(hoy){ const [y,m,d]=hoy.split('-').map(Number); const dt=new Date(y,m-1,d-1); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`; }
+
+function vMes(){
+  const m=D.mes;
+  const fams=D.familias;
+  const totalFam=fams.reduce((s,f)=>s+f.venta,0);
+  return `
+  <div class="card">
+    <h2>Venta diaria · ${mesNombre(m.mes)}</h2>
+    ${barras(D.diario, D.diarioMesAnt)}
+    <div class="leg"><span><i style="background:#B5121B"></i>${mesNombre(m.mes)}</span><span><i style="background:#E6DCC9"></i>${mesNombre(D.mesAntCompleto.mes)}</span></div>
+  </div>
+  <div class="card">
+    <h2>Últimos ${D.meses.length} meses</h2>
+    ${lineaMeses(D.meses)}
+    <div class="tip">El punto verde es el mes en curso (parcial).</div>
+  </div>
+  <div class="card">
+    <h2>Por familia de queso</h2>
+    ${lista(fams,{sub:'kg',total:totalFam})}
+  </div>
+  <div class="card">
+    <h2>Top 10 productos</h2>
+    ${lista(D.productos,{sub:'kg'})}
+  </div>`;
+}
+
+function vCli(){
+  const total=D.mes.venta;
+  const bajaron=D.clientes.filter(c=>c.ventaMesAnt && c.venta<c.ventaMesAnt*0.85);
+  return `
+  <div class="card">
+    <h2>Top 10 clientes · ${mesNombre(D.mes.mes)}</h2>
+    ${lista(D.clientes,{sub:'kg',total})}
+    <div class="tip">La flecha compara contra todo ${mesNombre(D.mesAntCompleto.mes)}.</div>
+    ${bajaron.length?`<div class="alert">⚠️ <div><b>Bajaron más de 15 %:</b> ${bajaron.map(c=>esc(c.nombre)).join(', ')}</div></div>`:''}
+  </div>
+  <div class="card">
+    <h2>Por canal</h2>
+    ${lista(D.canales,{sub:'margen',total})}
+  </div>`;
+}
+
+function vEq(){
+  const total=D.mes.venta;
+  const nc=D.notasCredito||[];
+  const ncTotal=nc.reduce((s,n)=>s+n.monto,0);
+  return `
+  <div class="card">
+    <h2>Por vendedor · ${mesNombre(D.mes.mes)}</h2>
+    ${lista(D.vendedores,{sub:'margen',total})}
+  </div>
+  <div class="card">
+    <h2>Por ruta</h2>
+    ${lista(D.rutas,{sub:'kg'})}
+  </div>
+  <div class="card">
+    <h2>Notas de crédito del mes</h2>
+    <div class="med num" style="color:#C62828">${mxn(ncTotal)}</div>
+    <div class="sub">${pct(total?ncTotal/(total+ncTotal):null)} de la venta bruta</div>
+    ${nc.length?`<ul class="list">${nc.map(n=>`<li><div class="nm"><b>${esc(n.tipo)}</b><span>${n.documentos} doc. · ${kg(n.kg)}</span></div><div class="amt"><b class="num">${mxnC(n.monto)}</b></div></li>`).join('')}</ul>`:'<div class="empty">Sin notas de crédito</div>'}
+    <div style="margin-top:10px"><span class="chip">Degustación: ${kg(D.mes.degustacionKg)}</span>${D.mes.lineasSinCosto?`<span class="chip">⚠️ ${D.mes.lineasSinCosto} líneas sin costo</span>`:''}</div>
+  </div>`;
+}
+
+function render(){
+  document.getElementById('upd').innerHTML=`Actualizado<br><b>${esc(D.generado)}</b>`;
+  document.getElementById('v-hoy').innerHTML=vHoy();
+  document.getElementById('v-mes').innerHTML=vMes();
+  document.getElementById('v-cli').innerHTML=vCli();
+  document.getElementById('v-eq').innerHTML=vEq();
+}
+
+// service worker (solo si está servido por https o localhost)
+if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
