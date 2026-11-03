@@ -292,6 +292,18 @@ function lista(items, {sub='kg', total=null, max=null, comparar=true}={}){
     </li>`).join('')+'</ul>';
 }
 
+function listaProd(items){
+  if(!items||!items.length) return '<div class="empty">Sin ventas de producto</div>';
+  const mx=Math.max(...items.map(i=>i.venta));
+  return `<ul class="list">`+items.map((it,i)=>`
+    <li><span class="rk">${i+1}</span>
+      <div class="nm"><b>${esc(it.nombre)}</b>
+        <span>${kg(it.kg)} · ${pz(it.pz)} · costo ${mxnC(it.costo)}</span>
+        <div class="mini"><i style="width:${Math.max(2,it.venta/mx*100)}%"></i></div>
+      </div>
+      <div class="amt"><b class="num">${mxnC(it.venta)}</b><span class="delta sm ${it.margenPct==null?'eq':it.margenPct>=0?'up':'dn'}">mg ${pct(it.margenPct)}</span></div>
+    </li>`).join('')+'</ul>';
+}
 function kpis4(b, extra){
   return `<div class="grid2">
     <div class="kpi"><div class="v num">${fNum.format(Math.round(b.kg||0))} kg</div><div class="l">kilos</div>${extra&&extra.kg?`<div class="s">${extra.kg}</div>`:''}</div>
@@ -314,7 +326,8 @@ function vHoy(){
     ${hayHoy ? `
     <div class="big num">${mxn(h.venta)}</div>
     <div style="margin:8px 0 12px">${delta(h.venta,hs.venta)} <span class="sub">vs. todo el ${diaSem(hs.fecha)} pasado (${mxnC(hs.venta)})</span></div>
-    ${kpis4(h)}` : `
+    ${kpis4(h)}
+    ${h.nc>0?`<div class="tip">Incluye notas de crédito por –${mxnC(h.nc)} (ya restadas en la venta y el margen).</div>`:''}` : `
     <div class="med" style="color:var(--gris)">Sin facturación todavía</div>
     <div class="sub" style="margin-top:4px">El ${diaSem(hs.fecha)} pasado se vendieron ${mxnC(hs.venta)} en el día.</div>`}
   </div>
@@ -323,6 +336,7 @@ function vHoy(){
     <div class="big num" style="font-size:30px">${mxn(a.venta)}</div>
     <div style="margin:8px 0 12px">${delta(a.venta,s.venta)} <span class="sub">vs. ${diaSem(s.fecha)} pasado (${mxnC(s.venta)})</span></div>
     ${kpis4(a)}
+    ${a.nc>0?`<div class="tip">Incluye notas de crédito por –${mxnC(a.nc)} (ya restadas en la venta y el margen).</div>`:''}
   </div>
   <div class="card">
     <h2>Acumulado ${mesNombre(m.mes)}</h2>
@@ -332,6 +346,10 @@ function vHoy(){
     <div class="sub">${fNum1.format(avance*100)} % de lo vendido en todo ${mesNombre(c.mes)} (${mxnC(D.mesAntCompleto.venta)})</div>
     <div style="margin-top:12px">${kpis4(m,{kg:`${MES3[Number(c.mes.split('-')[1])-1]} mismo corte: ${fNum.format(Math.round(c.kg))} kg`, mg:`${MES3[Number(c.mes.split('-')[1])-1]} mismo corte: ${pct(c.margenPct)}`})}</div>
     <div class="tip">${m.diasConVenta} días con venta · promedio diario ${mxnC(m.promedioDiario)}</div>
+  </div>
+  <div class="card">
+    <h2>Qué se vendió ${hayHoy?'hoy':(esAyer?'ayer':'ese día')} · top 5</h2>
+    ${listaProd(hayHoy?(D.productosHoy||[]):(D.productosAyer||[]))}
   </div>
   <div class="card">
     <h2>Quién compró ${hayHoy?'hoy':(esAyer?'ayer':'ese día')}</h2>
