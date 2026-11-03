@@ -66,6 +66,9 @@ main{padding:14px 14px 0;max-width:560px;margin:0 auto}
 .kpi{background:var(--crema);border-radius:12px;padding:10px 12px}
 .kpi .v{font-size:19px;font-weight:800}
 .kpi .l{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.08em}
+.kpi .v.verde{color:var(--verde)}
+.kpi .v.rojo{color:#C62828}
+.kpi .s{font-size:11px;color:var(--gris);margin-top:2px}
 .delta{display:inline-flex;align-items:center;gap:4px;font-weight:800;font-size:14px;padding:4px 10px;border-radius:999px}
 .delta.up{background:var(--verdeSuave);color:var(--verde)}
 .delta.dn{background:var(--rojoSuave);color:#C62828}
@@ -289,6 +292,14 @@ function lista(items, {sub='kg', total=null, max=null, comparar=true}={}){
     </li>`).join('')+'</ul>';
 }
 
+function kpis4(b, extra){
+  return `<div class="grid2">
+    <div class="kpi"><div class="v num">${fNum.format(Math.round(b.kg||0))} kg</div><div class="l">kilos</div>${extra&&extra.kg?`<div class="s">${extra.kg}</div>`:''}</div>
+    <div class="kpi"><div class="v num rojo">${mxnC(b.costo||0)}</div><div class="l">costo de venta</div></div>
+    <div class="kpi"><div class="v num verde">${mxnC(b.margen||0)}</div><div class="l">margen bruto</div></div>
+    <div class="kpi"><div class="v num">${pct(b.margenPct)}</div><div class="l">margen %</div>${extra&&extra.mg?`<div class="s">${extra.mg}</div>`:''}</div>
+  </div>`;
+}
 function vHoy(){
   const a=D.ayer, s=D.ayerSemAnt, m=D.mes, c=D.mesAntMismoCorte;
   const h=D.hoyVenta||{venta:0,kg:0,pz:0}, hs=D.hoySemAnt||{venta:0};
@@ -303,11 +314,7 @@ function vHoy(){
     ${hayHoy ? `
     <div class="big num">${mxn(h.venta)}</div>
     <div style="margin:8px 0 12px">${delta(h.venta,hs.venta)} <span class="sub">vs. todo el ${diaSem(hs.fecha)} pasado (${mxnC(hs.venta)})</span></div>
-    <div class="grid3">
-      <div class="kpi"><div class="v num">${fNum.format(Math.round(h.kg))}</div><div class="l">kilos</div></div>
-      <div class="kpi"><div class="v num">${fNum.format(Math.round(h.pz))}</div><div class="l">piezas</div></div>
-      <div class="kpi"><div class="v num">${pct(h.margenPct)}</div><div class="l">margen</div></div>
-    </div>` : `
+    ${kpis4(h)}` : `
     <div class="med" style="color:var(--gris)">Sin facturación todavía</div>
     <div class="sub" style="margin-top:4px">El ${diaSem(hs.fecha)} pasado se vendieron ${mxnC(hs.venta)} en el día.</div>`}
   </div>
@@ -315,11 +322,7 @@ function vHoy(){
     <h2>${esAyer?'Ayer':'Último día cerrado'} · ${fecha(a.fecha)}</h2>
     <div class="big num" style="font-size:30px">${mxn(a.venta)}</div>
     <div style="margin:8px 0 12px">${delta(a.venta,s.venta)} <span class="sub">vs. ${diaSem(s.fecha)} pasado (${mxnC(s.venta)})</span></div>
-    <div class="grid3">
-      <div class="kpi"><div class="v num">${fNum.format(Math.round(a.kg))}</div><div class="l">kilos</div></div>
-      <div class="kpi"><div class="v num">${fNum.format(Math.round(a.pz))}</div><div class="l">piezas</div></div>
-      <div class="kpi"><div class="v num">${pct(a.margenPct)}</div><div class="l">margen</div></div>
-    </div>
+    ${kpis4(a)}
   </div>
   <div class="card">
     <h2>Acumulado ${mesNombre(m.mes)}</h2>
@@ -327,11 +330,7 @@ function vHoy(){
     <div style="margin:8px 0 4px">${delta(m.venta,c.venta)} <span class="sub">vs. ${MES3[Number(c.mes.split('-')[1])-1]} al mismo día (${mxnC(c.venta)})</span></div>
     <div class="bar"><i style="width:${avance*100}%"></i></div>
     <div class="sub">${fNum1.format(avance*100)} % de lo vendido en todo ${mesNombre(c.mes)} (${mxnC(D.mesAntCompleto.venta)})</div>
-    <div class="grid3" style="margin-top:12px">
-      <div class="kpi"><div class="v num">${fNum.format(Math.round(m.kg/1000*10)/10)} t</div><div class="l">${fNum.format(Math.round(m.kg))} kg</div></div>
-      <div class="kpi"><div class="v num">${fNum.format(Math.round(m.pz))}</div><div class="l">piezas</div></div>
-      <div class="kpi"><div class="v num">${pct(m.margenPct)}</div><div class="l">margen</div></div>
-    </div>
+    <div style="margin-top:12px">${kpis4(m,{kg:`${MES3[Number(c.mes.split('-')[1])-1]} mismo corte: ${fNum.format(Math.round(c.kg))} kg`, mg:`${MES3[Number(c.mes.split('-')[1])-1]} mismo corte: ${pct(c.margenPct)}`})}</div>
     <div class="tip">${m.diasConVenta} días con venta · promedio diario ${mxnC(m.promedioDiario)}</div>
   </div>
   <div class="card">
@@ -360,6 +359,7 @@ function vMes(){
   <div class="card">
     <h2>Por familia de queso</h2>
     ${lista(fams,{sub:'kg',total:totalFam})}
+    ${Math.abs(totalFam-m.venta)>1?`<div class="tip" style="border-top:1px solid var(--linea);padding-top:8px;margin-top:4px">Venta de producto <b class="num">${mxnC(totalFam)}</b> · descuentos y NC sin producto <b class="num">${mxnC(m.venta-totalFam)}</b> · <b>venta neta del mes ${mxnC(m.venta)}</b></div>`:''}
   </div>
   <div class="card">
     <h2>Top 10 productos</h2>
