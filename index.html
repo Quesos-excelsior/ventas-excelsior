@@ -22,7 +22,16 @@
 html,body{margin:0;padding:0;background:var(--crema);color:var(--tinta);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   -webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
-body{min-height:100vh;min-height:100dvh}
+body{min-height:100vh;min-height:100dvh;overscroll-behavior-y:contain}
+#ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 74px);transform:translate(-50%,-60px);z-index:20;background:var(--blanco);color:var(--rojo);font-weight:700;font-size:13px;padding:8px 14px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.15);display:flex;align-items:center;gap:8px;transition:transform .18s ease,opacity .18s;opacity:0;pointer-events:none}
+#ptr.show{opacity:1}
+#ptr .sp{width:14px;height:14px;border:2px solid var(--rojo);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;display:none}
+#ptr.busy .sp{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+header .updwrap{display:flex;align-items:center;gap:10px}
+#btn-ref{width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+#btn-ref:active{background:rgba(255,255,255,.3)}
+#btn-ref.girando svg{animation:spin .8s linear infinite}
 .num{font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 h1,h2,h3{margin:0;font-weight:800}
 button{font:inherit;cursor:pointer}
@@ -45,6 +54,31 @@ button{font:inherit;cursor:pointer}
 #pinmsg{min-height:22px;color:#C62828;font-size:14px;margin-top:16px;font-weight:600}
 label.rec{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--gris);margin-top:14px}
 label.rec input{width:18px;height:18px;accent-color:var(--rojo)}
+
+/* ---------- lista mensual ---------- */
+.ml{display:flex;flex-direction:column}
+.ml .hd{display:grid;grid-template-columns:1.1fr 1.3fr 1fr;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gris);font-weight:700;padding:0 0 8px;border-bottom:1px solid var(--linea)}
+.ml .hd span:last-child{text-align:right}
+.ml .m{display:grid;grid-template-columns:1.1fr 1.3fr 1fr;align-items:center;padding:10px 0;border-bottom:1px solid var(--linea);cursor:pointer}
+.ml .m .n b{display:block;font-size:15px}
+.ml .m .n span{font-size:11px;color:var(--gris)}
+.ml .m .v b{display:block;font-size:16px}
+.ml .m .v span{font-size:11px;color:var(--gris)}
+.ml .m .c{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.ml .m .c .delta{min-width:70px;justify-content:center;white-space:nowrap}
+.ml .tot{display:grid;grid-template-columns:1.1fr 1.3fr 1fr;align-items:center;padding:12px 0 4px;border-top:2px solid var(--rojo);margin-top:2px}
+.ml .tot b{font-size:16px}.ml .tot span{font-size:11px;color:var(--gris);display:block}
+.ml .det{background:var(--crema);border-radius:12px;padding:12px;margin:0 0 8px}
+.parcial{color:var(--verde);font-weight:800;font-size:10px}
+.d2{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
+.d2 div b{display:block;font-size:14px}
+.d2 div span{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.06em}
+.selmes{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.selmes select{flex:1;font:inherit;font-weight:700;padding:10px 12px;border-radius:12px;border:1px solid var(--linea);background:var(--blanco);color:var(--rojo)}
+.selmes button{width:40px;height:40px;border-radius:12px;border:1px solid var(--linea);background:var(--blanco);font-size:18px;color:var(--rojo)}
+.ytd{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ytd .kpi .v{font-size:17px}
+.ytd .kpi .s{font-size:11px;color:var(--gris);margin-top:2px}
 
 /* ---------- APP ---------- */
 #app{display:none;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
@@ -93,6 +127,11 @@ main{padding:14px 14px 0;max-width:560px;margin:0 auto}
 .seg button{flex:1;border:none;background:transparent;padding:9px 6px;border-radius:9px;font-weight:700;color:var(--gris);font-size:13px}
 .seg button.on{background:var(--blanco);color:var(--rojo);box-shadow:var(--sombra)}
 svg text{font-family:inherit}
+.view svg{height:auto;display:block}
+.prodlist .nm span{font-size:11.5px;white-space:nowrap}
+.prodlist .amt{min-width:92px}
+.amt .vs{display:flex;align-items:center;gap:4px;justify-content:flex-end;white-space:nowrap}
+.amt .vs em{font-style:normal;font-size:11px;color:var(--gris)}
 .leg{display:flex;gap:14px;font-size:12px;color:var(--gris);margin-top:6px}
 .leg i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
 .alert{display:flex;gap:10px;align-items:flex-start;background:var(--rojoSuave);border-radius:12px;padding:10px 12px;font-size:13px;color:#8E0E15;margin-top:10px}
@@ -125,15 +164,17 @@ nav button.on{color:var(--rojo)}
 
 <!-- APP -->
 <div id="app">
-  <header>
+  <div id="ptr"><span class="sp"></span><span id="ptr-txt">Desliza para actualizar</span></div>
+<header>
     <div class="row">
       <div class="brand">Excelsior<small>Ventas · Parroli</small></div>
-      <div class="upd" id="upd"></div>
+      <div class="updwrap"><div class="upd" id="upd"></div><button id="btn-ref" aria-label="Actualizar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button></div>
     </div>
   </header>
   <main>
     <section class="view on" id="v-hoy"></section>
     <section class="view" id="v-mes"></section>
+    <section class="view" id="v-prod"></section>
     <section class="view" id="v-cli"></section>
     <section class="view" id="v-eq"></section>
     <div class="foot">Datos de SAP Business One · <button id="salir">Cerrar sesión</button></div>
@@ -141,6 +182,7 @@ nav button.on{color:var(--rojo)}
   <nav>
     <button class="on" data-v="hoy"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>Hoy</button>
     <button data-v="mes"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Mes</button>
+    <button data-v="prod"><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>Productos</button>
     <button data-v="cli"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15 15.5a5 5 0 016.5 4.5"/></svg>Clientes</button>
     <button data-v="eq"><svg viewBox="0 0 24 24"><path d="M3 20h18M6 16V9M11 16V4M16 16v-6M21 16v-3"/></svg>Equipo</button>
   </nav>
@@ -217,10 +259,11 @@ function tecla(k){
 }
 document.addEventListener('keydown',e=>{ if(document.getElementById('pin').style.display==='none')return;
   if(/^[0-9]$/.test(e.key)) tecla(e.key); else if(e.key==='Backspace') tecla('borrar'); else if(e.key==='Enter') tecla('ok'); });
+let pinActual=null, ultimaCarga=0, refrescando=false;
 async function entrar(pin){
   const load=document.getElementById('loading'); load.style.display='flex';
   try{
-    D=await cargar(pin);
+    D=await cargar(pin); pinActual=pin; ultimaCarga=Date.now();
     try{ if(document.getElementById('rec').checked) localStorage.setItem(KEY_PIN,pin); }catch(_){}
     document.getElementById('pin').style.display='none';
     document.getElementById('app').style.display='block';
@@ -231,6 +274,27 @@ async function entrar(pin){
     try{ if(e.pin) localStorage.removeItem(KEY_PIN); }catch(_){}
   } finally { load.style.display='none'; }
 }
+// ---------- Actualizar: deslizar, tocar "Actualizado", o al volver a la app ----------
+const ptr=document.getElementById('ptr'), ptrTxt=document.getElementById('ptr-txt');
+function ptrShow(txt,busy){ ptrTxt.textContent=txt; ptr.classList.toggle('busy',!!busy); ptr.classList.add('show'); ptr.style.transform='translate(-50%,0)'; }
+function ptrHide(){ ptr.classList.remove('show','busy'); ptr.style.transform='translate(-50%,-60px)'; }
+async function refrescar(){
+  if(refrescando||!pinActual) return; refrescando=true; document.getElementById('btn-ref').classList.add('girando');
+  ptrShow('Actualizando…',true);
+  try{ const d=await cargar(pinActual); D=d; ultimaCarga=Date.now(); render(); ptrShow('Actualizado '+(D.generado||'').slice(11,16),false); }
+  catch(e){ ptrShow(e.pin?'No se pudo descifrar':'Sin conexión, se muestran los últimos datos',false); }
+  finally{ refrescando=false; document.getElementById('btn-ref').classList.remove('girando'); setTimeout(ptrHide,1400); }
+}
+(function pull(){
+  let y0=null, dy=0, activo=false;
+  document.addEventListener('touchstart',e=>{ if(document.getElementById('app').style.display!=='block'||refrescando) return; if(window.scrollY<=0){ y0=e.touches[0].clientY; dy=0; activo=true; } else activo=false; },{passive:true});
+  document.addEventListener('touchmove',e=>{ if(!activo||y0===null) return; dy=e.touches[0].clientY-y0; if(dy>12){ const p=Math.min(dy,110); ptr.classList.add('show'); ptr.style.transform=`translate(-50%,${p-60}px)`; ptrTxt.textContent= dy>80 ? 'Suelta para actualizar' : 'Desliza para actualizar'; } },{passive:true});
+  document.addEventListener('touchend',()=>{ if(!activo) return; activo=false; if(dy>80) refrescar(); else ptrHide(); y0=null; dy=0; },{passive:true});
+  document.addEventListener('touchcancel',()=>{ activo=false; ptrHide(); },{passive:true});
+})();
+document.getElementById('btn-ref').onclick=refrescar;
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && pinActual && Date.now()-ultimaCarga>2*60*1000) refrescar(); });
+setInterval(()=>{ if(document.visibilityState==='visible' && pinActual && Date.now()-ultimaCarga>10*60*1000) refrescar(); },60*1000);
 document.getElementById('salir').onclick=()=>{ try{localStorage.removeItem(KEY_PIN);}catch(_){} location.reload(); };
 (function auto(){ let p=null; try{p=localStorage.getItem(KEY_PIN);}catch(_){} if(p) entrar(p); })();
 
@@ -242,7 +306,8 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
 });
 
 // ---------- gráficas SVG ----------
-function barras(serieAct, serieAnt, {alto=170}={}){
+let diaSel=null;
+function barras(serieAct, serieAnt, {alto=170, sel=null}={}){
   // serieAct/serieAnt: [{dia, venta}]; eje x = día del mes 1..31
   const W=520, H=alto, padL=8, padR=8, padT=14, padB=22;
   const dias=31, bw=(W-padL-padR)/dias;
@@ -256,7 +321,10 @@ function barras(serieAct, serieAnt, {alto=170}={}){
     out+=`<rect x="${padL+(d-1)*bw+1}" y="${y(v)}" width="${bw-2}" height="${H-padB-y(v)}" rx="2" fill="#E6DCC9"/>`; }
   // mes actual: rojo
   for(let d=1;d<=dias;d++){ const v=mapAct[d]; if(!v) continue;
-    out+=`<rect x="${padL+(d-1)*bw+1}" y="${y(v)}" width="${bw-2}" height="${H-padB-y(v)}" rx="2" fill="#B5121B"/>`; }
+    out+=`<rect x="${padL+(d-1)*bw+1}" y="${y(v)}" width="${bw-2}" height="${H-padB-y(v)}" rx="2" fill="${sel===d?'#7A0C12':'#B5121B'}"/>`; }
+  // columnas invisibles para tocar
+  for(let d=1;d<=dias;d++) out+=`<rect class="hit" data-d="${d}" x="${padL+(d-1)*bw}" y="0" width="${bw}" height="${H}" fill="transparent"/>`;
+  if(sel) out+=`<rect x="${padL+(sel-1)*bw}" y="${padT}" width="${bw}" height="${H-padT-padB}" fill="none" stroke="#7A0C12" stroke-width="1" rx="2"/>`;
   // eje
   for(let d=1;d<=dias;d+=5) out+=`<text x="${padL+(d-0.5)*bw}" y="${H-6}" font-size="11" fill="#7A6F66" text-anchor="middle">${d}</text>`;
   out+=`<text x="${padL}" y="10" font-size="10" fill="#7A6F66">máx ${mxnC(max)}</text></svg>`;
@@ -279,16 +347,17 @@ function lineaMeses(meses){
 }
 
 // ---------- vistas ----------
-function lista(items, {sub='kg', total=null, max=null, comparar=true}={}){
+function lista(items, {sub='kg', total=null, max=null, comparar=true, vs=null}={}){
+  const vsTxt = vs===null ? (D&&D.mesAntCompleto?mesCortoAnio(D.mesAntCompleto.mes):'') : vs;
   if(!items||!items.length) return '<div class="empty">Sin datos</div>';
   const mx = max ?? Math.max(...items.map(i=>i.venta));
-  return `<ul class="list">`+items.map((it,i)=>`
+  return `<ul class="list${sub==='prod'?' prodlist':''}">`+items.map((it,i)=>`
     <li><span class="rk">${i+1}</span>
       <div class="nm"><b>${esc(it.nombre)}</b>
-        <span>${sub==='kg'?kg(it.kg)+' · '+pz(it.pz):''}${sub==='margen'?'margen '+pct(it.margenPct):''}${total?' · '+fNum1.format(it.venta/total*100)+' % del total':''}</span>
+        <span>${sub==='kg'?kg(it.kg)+' · '+pz(it.pz):''}${sub==='kgsolo'?kg(it.kg):''}${sub==='prod'?kg(it.kg)+' · '+pz(it.pz)+'<br>precio $'+fNum1.format(it.kg?it.venta/it.kg:0)+'/kg · costo $'+fNum1.format(it.kg?it.costo/it.kg:0)+'/kg<br>margen <b style="display:inline;font-size:inherit;color:var(--verde)">'+pct(it.margenPct)+'</b>':''}${sub==='fam'?kg(it.kg)+' · <b style="display:inline;font-size:inherit;color:var(--verde)">'+pct(it.margenPct)+'</b> margen':''}${sub==='margen'?'margen '+pct(it.margenPct):''}${total?((sub==='fam'||sub==='kgsolo')?'<br>':' · ')+fNum1.format(it.venta/total*100)+' % de la venta del mes':''}</span>
         <div class="mini"><i style="width:${Math.max(2,it.venta/mx*100)}%"></i></div>
       </div>
-      <div class="amt"><b class="num">${mxnC(it.venta)}</b>${comparar?delta(it.venta,it.ventaMesAnt,{small:true}):`<span>${pct(it.margenPct)}</span>`}</div>
+      <div class="amt"><b class="num">${mxnC(it.venta)}</b>${comparar?`<span class="vs">${delta(it.venta,it.ventaMesAnt,{small:true})}${vsTxt?` <em>vs ${vsTxt}</em>`:''}</span>`:`<span>${pct(it.margenPct)}</span>`}</div>
     </li>`).join('')+'</ul>';
 }
 
@@ -359,48 +428,305 @@ function vHoy(){
 }
 function isoAyer(hoy){ const [y,m,d]=hoy.split('-').map(Number); const dt=new Date(y,m-1,d-1); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`; }
 
+function fmtMesCorto(ym){ const [y,m]=ym.split('-').map(Number); return `${MES3[m-1]} ${String(y).slice(2)}`; }
+function dosLineas(meses, k1, k2, {alto=170, etiquetas=['','']}={}){
+  const W=520,H=alto,padL=8,padR=8,padT=16,padB=22, n=meses.length; if(n<2) return '';
+  const vals=[...meses.map(m=>m[k1]||0),...meses.map(m=>m[k2]||0)];
+  const max=Math.max(...vals)*1.05, min=Math.min(...vals)*0.9;
+  const x=i=>padL+(W-padL-padR)*i/(n-1), y=v=>padT+(H-padT-padB)*(1-(v-min)/((max-min)||1));
+  const p1=meses.map((m,i)=>`${x(i)},${y(m[k1]||0)}`).join(' '), p2=meses.map((m,i)=>`${x(i)},${y(m[k2]||0)}`).join(' ');
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">`;
+  out+=`<polyline points="${p2}" fill="none" stroke="#C9A96E" stroke-width="2.5" stroke-linejoin="round"/>`;
+  out+=`<polyline points="${p1}" fill="none" stroke="#B5121B" stroke-width="3" stroke-linejoin="round"/>`;
+  meses.forEach((m,i)=>{ if(i%2===n%2||i===n-1){ out+=`<text x="${x(i)}" y="${H-6}" font-size="11" fill="#7A6F66" text-anchor="middle">${MES3[Number(m.mes.split('-')[1])-1]}</text>`; } });
+  const u=meses[n-1];
+  out+=`<text x="${x(n-1)}" y="${y(u[k1]||0)-8}" font-size="11" font-weight="700" fill="#B5121B" text-anchor="end">$${fNum1.format(u[k1]||0)}</text>`;
+  out+=`<text x="${x(n-1)}" y="${y(u[k2]||0)+14}" font-size="11" font-weight="700" fill="#9A7A3A" text-anchor="end">$${fNum1.format(u[k2]||0)}</text>`;
+  return out+'</svg>';
+}
+function barrasMeses(meses, k, {alto=160, fmt=mxnC}={}){
+  const W=520,H=alto,padL=8,padR=8,padT=18,padB=22,n=meses.length;
+  const bw=(W-padL-padR)/n, max=Math.max(1,...meses.map(m=>m[k]||0));
+  const y=v=>padT+(H-padT-padB)*(1-v/max);
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">`;
+  meses.forEach((m,i)=>{ const v=m[k]||0; const last=i===n-1;
+    out+=`<rect x="${padL+i*bw+2}" y="${y(v)}" width="${bw-4}" height="${H-padB-y(v)}" rx="3" fill="${last?'#2E7D32':'#B5121B'}"/>`;
+    if(i%2===n%2||last) out+=`<text x="${padL+i*bw+bw/2}" y="${H-6}" font-size="11" fill="#7A6F66" text-anchor="middle">${MES3[Number(m.mes.split('-')[1])-1]}</text>`;
+    out+=`<text x="${padL+i*bw+bw/2}" y="${y(v)-4}" font-size="9" font-weight="700" fill="${last?'#2E7D32':'#3B2F2A'}" text-anchor="middle">${fmt(v)}</text>`;
+  });
+  return out+'</svg>';
+}
+function barrasAnio(meses, k, {alto=210, fmt, sel}={}){
+  // meses: array ascendente del año en curso, con k y k+'AnioAnt'
+  const W=520,H=alto,padL=6,padR=6,padT=26,padB=24,n=12;
+  const bw=(W-padL-padR)/n, kAnt=k+'AnioAnt';
+  const max=Math.max(1,...meses.map(m=>Math.max(m[k]||0,m[kAnt]||0)));
+  const y=v=>padT+(H-padT-padB)*(1-v/max);
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" id="ba-${k}">`;
+  for(let i=0;i<n;i++){
+    const m=meses[i]; const x0=padL+i*bw;
+    out+=`<text x="${x0+bw/2}" y="${H-7}" font-size="11" fill="#7A6F66" text-anchor="middle">${MES3[i]}</text>`;
+    if(!m) continue;
+    const a=m[kAnt]||0, v=m[k]||0;
+    if(a) out+=`<rect x="${x0+3}" y="${y(a)}" width="${bw-6}" height="${H-padB-y(a)}" rx="3" fill="#E6DCC9"/>`;
+    out+=`<rect class="barra" data-m="${m.mes}" x="${x0+8}" y="${y(v)}" width="${bw-16}" height="${H-padB-y(v)}" rx="3" fill="${m.parcial?'#2E7D32':(sel===m.mes?'#7A0C12':'#B5121B')}"/>`;
+    out+=`<text x="${x0+bw/2}" y="${y(v)-5}" font-size="10" font-weight="700" fill="${m.parcial?'#2E7D32':'#3B2F2A'}" text-anchor="middle">${fmt(v)}</text>`;
+  }
+  return out+'</svg>';
+}
+function lineaMargen(meses, {alto=170}={}){
+  const W=520,H=alto,padL=24,padR=20,padT=26,padB=24,n=12;
+  const act=meses.map(m=>m?m.margenPct:null), ant=meses.map(m=>m?m.margenPctAnioAnt:null);
+  const vals=[...act,...ant].filter(v=>v!=null);
+  if(!vals.length) return '';
+  const lo=Math.min(...vals), hi=Math.max(...vals), span=Math.max(hi-lo,0.01);
+  const min=lo-span*0.25, max=hi+span*0.3;
+  const x=i=>padL+(W-padL-padR)*i/(n-1), y=v=>padT+(H-padT-padB)*(1-(v-min)/(max-min));
+  const path=(arr)=>arr.map((v,i)=>v==null?null:`${x(i)},${y(v)}`).filter(Boolean).join(' ');
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">`;
+  for(let i=0;i<n;i++) out+=`<text x="${x(i)}" y="${H-6}" font-size="11" fill="#7A6F66" text-anchor="middle">${MES3[i]}</text>`;
+  out+=`<polyline points="${path(ant)}" fill="none" stroke="#C9A96E" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  out+=`<polyline points="${path(act)}" fill="none" stroke="#B5121B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  act.forEach((v,i)=>{ if(v==null) return; const m=meses[i]; const col=m.parcial?'#2E7D32':'#B5121B';
+    out+=`<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="${col}"/>`;
+    out+=`<text x="${x(i)}" y="${y(v)-9}" font-size="10" font-weight="700" fill="${col}" text-anchor="middle">${(v*100).toFixed(1)}%</text>`; });
+  ant.forEach((v,i)=>{ if(v==null) return; out+=`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="#C9A96E"/>`;
+    if(act[i]==null || Math.abs(y(v)-y(act[i]))>30) out+=`<text x="${x(i)}" y="${y(v)+16}" font-size="9.5" fill="#9A7A3A" text-anchor="middle">${(v*100).toFixed(1)}%</text>`; });
+  return out+'</svg>';
+}
+function areaRitmo(meses,{alto=190}={}){
+  const W=520,H=alto,padL=16,padR=16,padT=30,padB=24,n=meses.length; if(n<2) return '';
+  const v=meses.map(m=>m.promedioDiario||0);
+  const cerrados=meses.filter(m=>!m.parcial); const prom=cerrados.slice(-12).reduce((s,m)=>s+(m.promedioDiario||0),0)/Math.max(1,Math.min(12,cerrados.length));
+  const lo=Math.min(...v,prom), hi=Math.max(...v,prom), span=Math.max(hi-lo,prom*0.05);
+  const min=lo-span*0.6, max=hi+span*0.35;
+  const x=i=>padL+(W-padL-padR)*i/(n-1), y=k=>padT+(H-padT-padB)*(1-(k-min)/(max-min));
+  const pts=v.map((k,i)=>`${x(i)},${y(k)}`).join(' ');
+  const iMax=v.indexOf(Math.max(...v.slice(0,n-1))), iMin=v.indexOf(Math.min(...v.slice(0,n-1)));
+  const f=k=>'$'+(k/1e6).toFixed(2)+'M';
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+  <defs><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B5121B" stop-opacity=".28"/><stop offset="1" stop-color="#B5121B" stop-opacity=".02"/></linearGradient></defs>`;
+  out+=`<polygon points="${x(0)},${H-padB} ${pts} ${x(n-1)},${H-padB}" fill="url(#gr)"/>`;
+  out+=`<line x1="${padL}" x2="${W-padR}" y1="${y(prom)}" y2="${y(prom)}" stroke="#7A6F66" stroke-width="1.2" stroke-dasharray="4 4"/>`;
+  out+=`<text x="${padL}" y="${y(prom)-5}" font-size="9.5" fill="#7A6F66" text-anchor="start">promedio 12 meses · ${f(prom)}</text>`;
+  out+=`<polyline points="${pts}" fill="none" stroke="#B5121B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  meses.forEach((m,i)=>{ if(i%2===n%2||i===n-1) out+=`<text x="${x(i)}" y="${H-6}" font-size="11" fill="#7A6F66" text-anchor="middle">${MES3[Number(m.mes.slice(5))-1]}</text>`; });
+  const dot=(i,col,lab,up)=>{ out+=`<circle cx="${x(i)}" cy="${y(v[i])}" r="5" fill="${col}" stroke="#fff" stroke-width="2"/>`;
+    out+=`<text x="${x(i)}" y="${y(v[i])+(up?-11:19)}" font-size="10" font-weight="700" fill="${col}" text-anchor="${i===n-1?'end':i===0?'start':'middle'}">${lab}</text>`; };
+  dot(iMax,'#2E7D32',f(v[iMax]),true); dot(iMin,'#C62828',f(v[iMin]),false);
+  dot(n-1,'#B5121B',f(v[n-1]),v[n-1]>=prom);
+  return {svg:out+'</svg>',prom,iMax,iMin};
+}
+function lineasVentaCosto(meses,{alto=200}={}){
+  const W=520,H=alto,padL=24,padR=20,padT=26,padB=24,n=12;
+  const v=meses.map(m=>m?m.venta:null), c=meses.map(m=>m?m.costo:null);
+  const vals=[...v,...c].filter(x=>x!=null); if(!vals.length) return '';
+  const lo=Math.min(...vals), hi=Math.max(...vals), span=hi-lo||1;
+  const min=lo-span*0.35, max=hi+span*0.25;
+  const x=i=>padL+(W-padL-padR)*i/(n-1), y=k=>padT+(H-padT-padB)*(1-(k-min)/(max-min));
+  const path=arr=>arr.map((k,i)=>k==null?null:`${x(i)},${y(k)}`).filter(Boolean).join(' ');
+  const f=k=>'$'+(k/1e6).toFixed(1)+'M';
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">`;
+  for(let i=0;i<n;i++) out+=`<text x="${x(i)}" y="${H-6}" font-size="11" fill="#7A6F66" text-anchor="middle">${MES3[i]}</text>`;
+  // relleno entre líneas = margen
+  const up=v.map((k,i)=>k==null?null:`${x(i)},${y(k)}`).filter(Boolean), dn=c.map((k,i)=>k==null?null:`${x(i)},${y(k)}`).filter(Boolean).reverse();
+  out+=`<polygon points="${[...up,...dn].join(' ')}" fill="#2E7D32" fill-opacity=".10"/>`;
+  out+=`<polyline points="${path(c)}" fill="none" stroke="#C9A96E" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  out+=`<polyline points="${path(v)}" fill="none" stroke="#B5121B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  v.forEach((k,i)=>{ if(k==null) return; const col=meses[i].parcial?'#2E7D32':'#B5121B';
+    out+=`<circle cx="${x(i)}" cy="${y(k)}" r="4" fill="${col}"/><text x="${x(i)}" y="${y(k)-9}" font-size="9.5" font-weight="700" fill="${col}" text-anchor="middle">${f(k)}</text>`; });
+  c.forEach((k,i)=>{ if(k==null) return;
+    out+=`<circle cx="${x(i)}" cy="${y(k)}" r="3.5" fill="#C9A96E"/><text x="${x(i)}" y="${y(k)+16}" font-size="9.5" font-weight="700" fill="#9A7A3A" text-anchor="middle">${f(k)}</text>`; });
+  return out+'</svg>';
+}
+let mesSel=null;
 function vMes(){
-  const m=D.mes;
-  const fams=D.familias;
-  const totalFam=fams.reduce((s,f)=>s+f.venta,0);
+  const md=(D.mesesDetalle||D.meses||[]).slice(); // ascendente
+  const ult13=md.slice(-13);
+  const y=D.ytd;
+  const desc=md.slice().reverse();
+  const act=desc[0]; if(!mesSel) mesSel=act.mes;
+  // tabla
+  const filas=desc.slice(0,13).map(m=>{
+    const prev=md[md.indexOf(m)-1];
+    const dm=prev?delta(m.venta,prev.venta,{small:true}):'<span class="delta eq sm">—</span>';
+    const da=m.ventaAnioAnt?delta(m.venta,m.ventaAnioAnt,{small:true}):'<span class="delta eq sm">—</span>';
+    return `<div class="m" data-m="${m.mes}">
+      <div class="n"><b>${fmtMesCorto(m.mes)}</b><span>${m.diasConVenta} días${m.parcial?' · <span class="parcial">PARCIAL</span>':''}</span></div>
+      <div class="v"><b class="num">${mxnC(m.venta)}</b><span class="num">${fNum.format(Math.round(m.kg/1000))} t · ${pct(m.margenPct)}</span></div>
+      <div class="c">${dm}${da}</div>
+    </div>
+    <div class="det" data-det="${m.mes}" style="display:none"><div class="d2">
+      <div><b class="num" style="color:#C62828">${mxnC(m.costo)}</b><span>costo de venta</span></div>
+      <div><b class="num" style="color:var(--verde)">${mxnC(m.margen)}</b><span>margen bruto</span></div>
+      <div><b class="num">${mxnC(m.promedioDiario)}</b><span>promedio por día de venta</span></div>
+      <div><b class="num">${fNum.format(Math.round(m.pz))} pz</b><span>piezas</span></div>
+      <div><b class="num">$${fNum1.format(m.precioKg||0)}</b><span>precio por kg</span></div>
+      <div><b class="num">$${fNum1.format(m.costoKg||0)}</b><span>costo por kg</span></div>
+      <div><b class="num" style="color:#C62828">${mxn(m.nc||0)}</b><span>notas de crédito</span></div>
+      <div><b class="num">${m.ventaAnioAnt?mxnC(m.ventaAnioAnt):'—'}</b><span>venta ${MES3[Number(m.mes.slice(5))-1]} ${Number(m.mes.slice(0,4))-1}</span></div>
+    </div></div>`;
+  }).join('');
+  // totales del año en curso (meses completos + parcial)
+  const anio=act.mes.slice(0,4);
+  const delAnio=md.filter(m=>m.mes.startsWith(anio));
+  const tv=delAnio.reduce((s,m)=>s+m.venta,0), tk=delAnio.reduce((s,m)=>s+m.kg,0), tc=delAnio.reduce((s,m)=>s+m.costo,0);
+  const ytdCard = y ? `
+  <div class="card">
+    <h2>Acumulado ${y.anio} · 1 ene – ${fecha(y.hasta).replace(/^\w+ /,'')}</h2>
+    <div class="big num" style="font-size:30px">${mxn(y.actual.venta)}</div>
+    <div style="margin:8px 0 12px">${delta(y.actual.venta,y.anterior.venta)} <span class="sub">vs. mismo periodo ${y.anterior.anio} (${mxnC(y.anterior.venta)})</span></div>
+    <div class="ytd">
+      <div class="kpi"><div class="v num">${fNum.format(Math.round(y.actual.kg/1000))} t</div><div class="l">kilos</div><div class="s">${y.anterior.anio}: ${fNum.format(Math.round(y.anterior.kg/1000))} t · ${delta(y.actual.kg,y.anterior.kg,{small:true})}</div></div>
+      <div class="kpi"><div class="v num rojo">${mxnC(y.actual.costo)}</div><div class="l">costo de venta</div><div class="s">${y.anterior.anio}: ${mxnC(y.anterior.costo)}</div></div>
+      <div class="kpi"><div class="v num verde">${mxnC(y.actual.margen)}</div><div class="l">margen bruto</div><div class="s">${y.anterior.anio}: ${mxnC(y.anterior.margen)} · ${delta(y.actual.margen,y.anterior.margen,{small:true})}</div></div>
+      <div class="kpi"><div class="v num">${pct(y.actual.margenPct)}</div><div class="l">margen %</div><div class="s">${y.anterior.anio}: ${pct(y.anterior.margenPct)}</div></div>
+    </div>
+    ${y.datosAnioAnteriorCompletos?'':'<div class="tip">El comparativo del año anterior se completará conforme el histórico cargado cubra todo ese periodo.</div>'}
+  </div>`:'';
   return `
+  ${ytdCard}
   <div class="card">
-    <h2>Venta diaria · ${mesNombre(m.mes)}</h2>
-    ${barras(D.diario, D.diarioMesAnt)}
-    <div class="leg"><span><i style="background:#B5121B"></i>${mesNombre(m.mes)}</span><span><i style="background:#E6DCC9"></i>${mesNombre(D.mesAntCompleto.mes)}</span></div>
+    <h2>Venta por mes · ${anio} vs ${Number(anio)-1}</h2>
+    ${barrasAnio(delAnio,'venta',{fmt:v=>'$'+fNum1.format(v/1e6)+'M',sel:mesSel})}
+    <div class="leg"><span><i style="background:#B5121B"></i>${anio}</span><span><i style="background:#E6DCC9"></i>${Number(anio)-1}</span><span><i style="background:#2E7D32"></i>mes en curso (parcial)</span></div>
+    <div id="mes-det">${detMes(delAnio.find(m=>m.mes===mesSel)||act, md)}</div>
+    <div class="tip">Toca una barra para ver el detalle de ese mes.</div>
   </div>
   <div class="card">
-    <h2>Últimos ${D.meses.length} meses</h2>
-    ${lineaMeses(D.meses)}
-    <div class="tip">El punto verde es el mes en curso (parcial).</div>
+    <h2>Kilos por mes · ${anio} vs ${Number(anio)-1}</h2>
+    ${barrasAnio(delAnio,'kg',{alto:180,fmt:v=>fNum.format(Math.round(v/1000))+' t'})}
+    <div class="leg"><span><i style="background:#B5121B"></i>${anio}</span><span><i style="background:#E6DCC9"></i>${Number(anio)-1}</span></div>
   </div>
   <div class="card">
-    <h2>Por familia de queso</h2>
-    ${lista(fams,{sub:'kg',total:totalFam})}
-    ${Math.abs(totalFam-m.venta)>1?`<div class="tip" style="border-top:1px solid var(--linea);padding-top:8px;margin-top:4px">Venta de producto <b class="num">${mxnC(totalFam)}</b> · descuentos y NC sin producto <b class="num">${mxnC(m.venta-totalFam)}</b> · <b>venta neta del mes ${mxnC(m.venta)}</b></div>`:''}
+    <h2>Venta neta vs costo de venta · ${anio}</h2>
+    ${lineasVentaCosto(delAnio)}
+    <div class="leg"><span><i style="background:#B5121B"></i>venta neta</span><span><i style="background:#C9A96E"></i>costo de venta</span><span><i style="background:#2E7D32;opacity:.35"></i>margen bruto</span></div>
+    <div class="tip">La franja verde entre las dos líneas es el margen bruto en pesos de cada mes. Si las líneas se acercan, el margen se achica aunque la venta suba.</div>
   </div>
   <div class="card">
-    <h2>Top 10 productos</h2>
-    ${lista(D.productos,{sub:'kg'})}
+    <h2>Margen bruto % por mes · ${anio} vs ${Number(anio)-1}</h2>
+    ${lineaMargen(delAnio)}
+    <div class="leg"><span><i style="background:#B5121B"></i>${anio}</span><span><i style="background:#C9A96E"></i>${Number(anio)-1}</span><span><i style="background:#2E7D32"></i>mes en curso</span></div>
+    <div class="tip">Margen bruto = venta neta menos costo de venta, como % de la venta. Si la línea roja va arriba de la beige, el mes se vendió con mejor margen que el año pasado. Los pesos de margen están en el detalle de cada mes.</div>
+  </div>
+  <div class="card">
+    <h2>Venta diaria · ${mesNombre(D.mes.mes)} vs. ${mesNombre(D.mesAntCompleto.mes)}</h2>
+    ${(()=>{ if(!diaSel){ const u=D.diario.filter(s=>s.venta).slice(-1)[0]; diaSel=u?u.dia:null; } return barras(D.diario, D.diarioMesAnt,{sel:diaSel}); })()}
+    <div class="leg"><span><i style="background:#B5121B"></i>${mesNombre(D.mes.mes)}</span><span><i style="background:#E6DCC9"></i>${mesNombre(D.mesAntCompleto.mes)}</span></div>
+    ${diaSel?`<div class="det" style="margin-top:8px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px"><b>Día ${diaSel}</b><span><b class="num" style="color:#B5121B">${mxn((D.diario.find(s=>s.dia===diaSel)||{}).venta||0)}</b> <span class="sub">${MES3[Number(D.mes.mes.slice(5))-1]}</span> &nbsp;·&nbsp; <b class="num" style="color:#9A7A3A">${mxn((D.diarioMesAnt.find(s=>s.dia===diaSel)||{}).venta||0)}</b> <span class="sub">${MES3[Number(D.mesAntCompleto.mes.slice(5))-1]}</span></span></div>`:''}
+    <div class="tip">Toca un día para ver sus cifras.</div>
   </div>`;
 }
-
+function selectorMes(id, sel, meses){
+  const i=meses.indexOf(sel);
+  return `<div class="selmes">
+    <button id="${id}-prev" ${i<=0?'disabled':''}>‹</button>
+    <select id="${id}-sel">${meses.slice().reverse().map(m=>`<option value="${m}" ${m===sel?'selected':''}>${mesNombre(m)}${m===D.mes.mes?' (en curso)':''}</option>`).join('')}</select>
+    <button id="${id}-next" ${i===meses.length-1?'disabled':''}>›</button>
+  </div>`;
+}
+function wireSelector(id, meses, getSel, setSel, rerender){
+  const sel=document.getElementById(id+'-sel'); if(!sel) return;
+  const go=m=>{ setSel(m); rerender(); window.scrollTo({top:0}); };
+  sel.onchange=()=>go(sel.value);
+  const i=meses.indexOf(getSel());
+  document.getElementById(id+'-prev').onclick=()=>go(meses[i-1]);
+  document.getElementById(id+'-next').onclick=()=>go(meses[i+1]);
+}
+function ymAnt(ym){ const [y,m]=ym.split('-').map(Number); const d=new Date(y,m-2,1); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+function mesAntDe(ym){ const a=ymAnt(ym); return MES3[Number(a.slice(5))-1]+' '+a.slice(0,4); }
+function mesCortoAnio(ym){ return MES3[Number(ym.slice(5))-1]+' '+ym.slice(0,4); }
+function movClientes(mv, ym, vs){
+  if(!mv) return '';
+  const act=mesCortoAnio(ym), ant=mesCortoAnio(ymAnt(ym));
+  const fila=(r,col)=>`<li style="grid-template-columns:1fr auto"><div class="nm"><b>${esc(r.nombre)}</b><span>${ant}: ${mxnC(r.ventaMesAnt)} → ${mxnC(r.venta)}</span></div><div class="amt"><b class="num" style="color:${col}">${r.dif>0?'+':'−'}${mxnC(Math.abs(r.dif))}</b>${r.ventaMesAnt?`<span class="vs">${delta(r.venta,r.ventaMesAnt,{small:true})} <em>vs ${ant}</em></span>`:''}</div></li>`;
+  const bloque=(tit,arr,col)=>`<h3 style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${col};margin:14px 0 2px">${tit}</h3>${arr.length?`<ul class="list">${arr.map(r=>fila(r,col)).join('')}</ul>`:'<div class="empty" style="padding:8px 0">Ninguno</div>'}`;
+  return `<div class="card">
+    <h2>Quién sube y quién baja · ${mesNombre(ym)}</h2>
+    <div class="tip" style="margin-top:0">Diferencia en pesos contra ${mesNombre(ymAnt(ym))}, entre todos los clientes.</div>
+    ${bloque('▲ Los que más subieron', mv.suben, 'var(--verde)')}
+    ${bloque('▼ Los que más bajaron', mv.bajan, '#C62828')}
+    ${bloque('Compraron en '+ant+' y no en '+act, mv.sinCompra, 'var(--gris)')}
+    ${mv.nuevos&&mv.nuevos.length?bloque('Nuevos en '+act+' (no compraron en '+ant+')', mv.nuevos, 'var(--verde)'):''}
+  </div>`;
+}
+let cliMesSel=null;
 function vCli(){
-  const total=D.mes.venta;
-  const bajaron=D.clientes.filter(c=>c.ventaMesAnt && c.venta<c.ventaMesAnt*0.85);
+  const pm=D.productosPorMes||{}; const meses=Object.keys(pm).filter(m=>pm[m].clientes).sort();
+  if(!meses.length){ // compatibilidad con datos viejos
+    const total=D.mes.venta;
+    return `<div class="card"><h2>Top 10 clientes · ${mesNombre(D.mes.mes)}</h2>${lista(D.clientes,{sub:'fam',total})}</div><div class="card"><h2>Por canal</h2>${lista(D.canales,{sub:'margen',total})}</div>`;
+  }
+  if(!cliMesSel||!pm[cliMesSel]) cliMesSel=meses[meses.length-1];
+  const d=pm[cliMesSel], total=d.venta, vs=mesAntDe(cliMesSel);
+  const bajaron=d.clientes.filter(c=>c.ventaMesAnt && c.venta<c.ventaMesAnt*0.85);
   return `
+  ${selectorMes('cm', cliMesSel, meses)}
   <div class="card">
-    <h2>Top 10 clientes · ${mesNombre(D.mes.mes)}</h2>
-    ${lista(D.clientes,{sub:'kg',total})}
-    <div class="tip">La flecha compara contra todo ${mesNombre(D.mesAntCompleto.mes)}.</div>
-    ${bajaron.length?`<div class="alert">⚠️ <div><b>Bajaron más de 15 %:</b> ${bajaron.map(c=>esc(c.nombre)).join(', ')}</div></div>`:''}
+    <h2>Top 10 clientes · ${mesNombre(cliMesSel)}</h2>
+    ${lista(d.clientes,{sub:'fam',total,vs})}
+    ${bajaron.length?`<div class="alert">⚠️ <div><b>Bajaron más de 15 % vs ${vs}:</b> ${bajaron.map(c=>esc(c.nombre)).join(', ')}</div></div>`:''}
+  </div>
+  ${movClientes(d.movClientes, cliMesSel, vs)}`;
+}
+function wireCli(){
+  const pm=D.productosPorMes||{}; const meses=Object.keys(pm).filter(m=>pm[m].clientes).sort();
+  wireSelector('cm', meses, ()=>cliMesSel, m=>cliMesSel=m, ()=>{ document.getElementById('v-cli').innerHTML=vCli(); wireCli(); });
+}
+let prodMesSel=null;
+function vProd(){
+  const pm=D.productosPorMes||{}; const meses=Object.keys(pm).sort();
+  if(!meses.length) return '<div class="card"><div class="empty">Sin datos por mes</div></div>';
+  if(!prodMesSel||!pm[prodMesSel]) prodMesSel=meses[meses.length-1];
+  const i=meses.indexOf(prodMesSel); const d=pm[prodMesSel];
+  const totalFam=d.familias.reduce((s,f)=>s+f.venta,0);
+  const esActual=prodMesSel===D.mes.mes;
+  const mesAntSel=mesAntDe(prodMesSel);
+  return `
+  <div class="selmes">
+    <button id="pm-prev" ${i===0?'disabled':''}>‹</button>
+    <select id="pm-sel">${meses.slice().reverse().map(m=>`<option value="${m}" ${m===prodMesSel?'selected':''}>${mesNombre(m)}${m===D.mes.mes?' (en curso)':''}</option>`).join('')}</select>
+    <button id="pm-next" ${i===meses.length-1?'disabled':''}>›</button>
   </div>
   <div class="card">
-    <h2>Por canal</h2>
-    ${lista(D.canales,{sub:'margen',total})}
+    <h2>Por familia de queso · ${mesNombre(prodMesSel)}</h2>
+    ${lista(d.familias,{sub:'fam',total:totalFam,vs:mesAntSel})}
+    ${Math.abs(totalFam-d.venta)>1?`<div class="tip" style="border-top:1px solid var(--linea);padding-top:8px;margin-top:4px">Venta de producto <b class="num">${mxnC(totalFam)}</b> · descuentos y NC sin producto <b class="num">${mxnC(d.venta-totalFam)}</b> · <b>venta neta del mes ${mxnC(d.venta)}</b></div>`:''}
+  </div>
+  <div class="card">
+    <h2>Top 10 productos · ${mesNombre(prodMesSel)}</h2>
+    ${lista(d.productos,{sub:'prod',vs:mesAntSel})}
   </div>`;
 }
-
+function detMes(m, md){
+  if(!m) return '';
+  const prev=md[md.indexOf(m)-1];
+  const dm=prev?delta(m.venta,prev.venta,{small:true}):'';
+  const da=m.ventaAnioAnt?delta(m.venta,m.ventaAnioAnt,{small:true}):'';
+  return `<div class="det" style="margin-top:10px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><b style="font-size:16px">${mesNombre(m.mes)}${m.parcial?' <span class="parcial">PARCIAL · '+m.diasConVenta+' días</span>':''}</b><b class="num" style="font-size:18px">${mxn(m.venta)}</b></div>
+    <div style="font-size:12px;color:var(--gris);margin-bottom:10px">${dm} vs ${prev?MES3[Number(prev.mes.slice(5))-1]:''} &nbsp; ${da} vs ${MES3[Number(m.mes.slice(5))-1]} ${Number(m.mes.slice(0,4))-1}${m.ventaAnioAnt?' ('+mxnC(m.ventaAnioAnt)+')':''}</div>
+    <div class="d2">
+      <div><b class="num">${fNum.format(Math.round(m.kg))} kg</b><span>kilos</span></div>
+      <div><b class="num">${mxnC(m.promedioDiario)}</b><span>promedio por día de venta (${m.diasConVenta} días)</span></div>
+      <div><b class="num" style="color:#C62828">${mxnC(m.costo)}</b><span>costo de venta</span></div>
+      <div><b class="num" style="color:var(--verde)">${mxnC(m.margen)} · ${pct(m.margenPct)}</b><span>margen bruto</span></div>
+    </div></div>`;
+}
+function wireMes(){
+  document.querySelectorAll('#v-mes rect.hit').forEach(r=>r.onclick=()=>{ diaSel=Number(r.dataset.d); document.getElementById('v-mes').innerHTML=vMes(); wireMes(); });
+  document.querySelectorAll('#v-mes rect.barra').forEach(r=>r.onclick=()=>{ mesSel=r.dataset.m; document.getElementById('v-mes').innerHTML=vMes(); wireMes(); });
+}
+function wireProd(){
+  const sel=document.getElementById('pm-sel'); if(!sel) return;
+  const meses=Object.keys(D.productosPorMes||{}).sort();
+  const go=m=>{ prodMesSel=m; document.getElementById('v-prod').innerHTML=vProd(); wireProd(); window.scrollTo({top:0}); };
+  sel.onchange=()=>go(sel.value);
+  const i=meses.indexOf(prodMesSel);
+  document.getElementById('pm-prev').onclick=()=>go(meses[i-1]);
+  document.getElementById('pm-next').onclick=()=>go(meses[i+1]);
+}
 function vEq(){
   const total=D.mes.venta;
   const nc=D.notasCredito||[];
@@ -412,7 +738,7 @@ function vEq(){
   </div>
   <div class="card">
     <h2>Por ruta</h2>
-    ${lista(D.rutas,{sub:'kg'})}
+    ${lista(D.rutas,{sub:'kgsolo'})}
   </div>
   <div class="card">
     <h2>Notas de crédito del mes</h2>
@@ -426,8 +752,9 @@ function vEq(){
 function render(){
   document.getElementById('upd').innerHTML=`Actualizado<br><b>${esc(D.generado)}</b>`;
   document.getElementById('v-hoy').innerHTML=vHoy();
-  document.getElementById('v-mes').innerHTML=vMes();
-  document.getElementById('v-cli').innerHTML=vCli();
+  document.getElementById('v-mes').innerHTML=vMes(); wireMes();
+  document.getElementById('v-prod').innerHTML=vProd(); wireProd();
+  document.getElementById('v-cli').innerHTML=vCli(); wireCli();
   document.getElementById('v-eq').innerHTML=vEq();
 }
 
