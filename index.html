@@ -833,9 +833,7 @@ const PCOSTO = new Set(['totalCosto','totalGastos','gVariables','gFijos','deprec
 function cum(real, plan, clave){
   if(plan==null||real==null||!plan) return '<span class="cum eq">—</span>';
   // para costos/gastos: cumplir = gastar igual o menos. para CIF (negativo): menos costo = mejor
-  let ratio;
-  if(clave==='cif'){ ratio = plan===0?1:(Math.abs(real)/Math.abs(plan)); }
-  else ratio = real/plan;
+  let ratio = real/plan;
   const esCosto = PCOSTO.has(clave)||clave==='cif';
   let ok;
   if(esCosto) ok = ratio<=1.0; else ok = (plan<0 ? real>=plan : ratio>=1.0);
@@ -1026,9 +1024,9 @@ function vPGas(){
   </div>
   <div class="card">
     <h2>Costo integral de financiamiento · plan vs real</h2>
-    ${barrasPR(items,{clave:'cif',fmt:v=>'$'+(Math.abs(v)/1e3).toFixed(0)+'k',alto:170})}
+    ${barrasPR(items,{clave:'cif',fmt:v=>'$'+(v/1e3).toFixed(0)+'k',alto:170})}
     <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#E6DCC9"></i>plan</span></div>
-    <div class="tip">Intereses y comisiones de los créditos. ${r?`${mesNombre(ym)}: real ${mxnC(Math.abs(r.cif||0))} vs plan ${mxnC(Math.abs(p.cif||0))} ${cum(r.cif,p.cif,'cif')}`:''}</div>
+    <div class="tip">Intereses y comisiones de los créditos, netos de productos financieros (positivo = costo). ${r?`${mesNombre(ym)}: real ${mxnC(r.cif||0)} vs plan ${mxnC(p.cif||0)} ${cum(r.cif,p.cif,'cif')}`:''}</div>
   </div>`;
 }
 function wirePres(){
