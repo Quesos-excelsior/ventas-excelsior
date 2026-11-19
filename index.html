@@ -28,6 +28,42 @@ body{min-height:100vh;min-height:100dvh;overscroll-behavior-y:contain}
 #ptr .sp{width:14px;height:14px;border:2px solid var(--rojo);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;display:none}
 #ptr.busy .sp{display:block}
 @keyframes spin{to{transform:rotate(360deg)}}
+header .brandwrap{display:flex;align-items:center;gap:12px}
+#btn-menu{width:40px;height:40px;border-radius:12px;border:none;background:rgba(255,255,255,.14);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;padding:0;cursor:pointer}
+#btn-menu span{display:block;width:20px;height:2.5px;background:#fff;border-radius:2px}
+#menu-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+#menu{position:fixed;top:0;left:0;bottom:0;width:min(78vw,300px);background:var(--blanco);z-index:31;transform:translateX(-105%);transition:transform .22s ease;box-shadow:4px 0 24px rgba(0,0,0,.18);display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top)) 14px 18px}
+body.menu-open #menu{transform:none} body.menu-open #menu-bg{opacity:1;pointer-events:auto}
+#menu .mh{font-weight:900;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--rojo);padding:4px 10px 18px}
+#menu .mh small{display:block;font-weight:600;font-size:11px;letter-spacing:.12em;color:var(--gris)}
+#menu .mi{display:flex;align-items:center;gap:12px;width:100%;border:none;background:transparent;text-align:left;font:inherit;font-size:16px;font-weight:700;color:var(--tinta);padding:13px 10px;border-radius:12px;cursor:pointer}
+#menu .mi svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#menu .mi span{flex:1}
+#menu .mi i{font-style:normal;color:var(--verde);opacity:0}
+#menu .mi.on{background:var(--crema);color:var(--rojo)} #menu .mi.on i{opacity:1}
+#menu .msep{height:1px;background:var(--linea);margin:10px 6px}
+#menu .mf{margin-top:auto;font-size:11px;color:var(--gris);padding:0 10px}
+header .modos-unused{display:flex;gap:4px;background:rgba(0,0,0,.18);border-radius:12px;padding:3px;margin-top:10px}
+header .modos button{flex:1;border:none;background:transparent;color:rgba(255,255,255,.8);font-weight:800;font-size:13px;padding:8px 0;border-radius:10px;letter-spacing:.02em}
+header .modos button.on{background:#fff;color:var(--rojo)}
+.er{width:100%;border-collapse:collapse;font-size:13px}
+.er th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gris);text-align:right;padding:2px 4px 8px;font-weight:700;border-bottom:1px solid var(--linea)}
+.er th:first-child{text-align:left}
+.er td{padding:9px 4px;border-bottom:1px solid var(--linea);text-align:right;white-space:nowrap;vertical-align:middle}
+.er td:first-child{text-align:left;white-space:normal}
+.er tr.r{cursor:pointer}
+.er tr.r td:first-child{font-weight:700}
+.er tr.res td{font-weight:800}
+.er tr.res td:first-child{color:var(--rojo)}
+.er tr.sub td{font-size:12px;color:var(--gris);padding:6px 4px;background:#FBF7EE}
+.er tr.sub td:first-child{padding-left:16px}
+.er .c{min-width:62px}
+.cum{display:inline-block;font-weight:800;font-size:12px;padding:3px 8px;border-radius:999px;min-width:54px;text-align:center}
+.cum.ok{background:var(--verdeSuave);color:var(--verde)}.cum.bad{background:var(--rojoSuave);color:#C62828}.cum.eq{background:var(--crema2);color:var(--gris)}
+.prog{height:10px;background:var(--crema2);border-radius:999px;overflow:hidden;margin:8px 0 4px;position:relative}
+.prog i{display:block;height:100%;background:var(--rojo);border-radius:999px}
+.prog i.ok{background:var(--verde)}
+.prog b{position:absolute;top:-3px;width:2px;height:16px;background:var(--tinta);opacity:.5}
 header .updwrap{display:flex;align-items:center;gap:10px}
 #btn-ref{width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
 #btn-ref:active{background:rgba(255,255,255,.3)}
@@ -87,7 +123,7 @@ header{background:var(--rojo);color:#fff;padding:calc(10px + env(safe-area-inset
 header .row{display:flex;align-items:center;justify-content:space-between}
 header .brand{font-weight:900;font-size:22px;letter-spacing:.06em;text-transform:uppercase}
 header .brand small{display:block;font-weight:600;font-size:11px;letter-spacing:.14em;opacity:.85}
-header .upd{font-size:11px;opacity:.85;text-align:right;line-height:1.3}
+header .upd{font-size:11px;opacity:.85;text-align:right;line-height:1.3;white-space:nowrap}
 main{padding:14px 14px 0;max-width:560px;margin:0 auto}
 .view{display:none}.view.on{display:block}
 .card{background:var(--blanco);border-radius:var(--radio);box-shadow:var(--sombra);padding:16px;margin-bottom:12px}
@@ -167,16 +203,30 @@ nav button.on{color:var(--rojo)}
   <div id="ptr"><span class="sp"></span><span id="ptr-txt">Desliza para actualizar</span></div>
 <header>
     <div class="row">
-      <div class="brand">Excelsior<small>Ventas · Parroli</small></div>
+      <div class="brandwrap"><button id="btn-menu" aria-label="Menú"><span></span><span></span><span></span></button><div class="brand">Excelsior<small id="brand-sub">Ventas · Parroli</small></div></div>
       <div class="updwrap"><div class="upd" id="upd"></div><button id="btn-ref" aria-label="Actualizar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg></button></div>
     </div>
   </header>
+  <div id="menu-bg"></div>
+  <aside id="menu">
+    <div class="mh">Excelsior<small>Parroli · SAP Business One</small></div>
+    <button class="mi on" data-m="ventas"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg><span>Ventas</span><i>✓</i></button>
+    <button class="mi" data-m="ppto" id="mi-ppto"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><span>Presupuesto</span><i>✓</i></button>
+    <div class="msep"></div>
+    <button class="mi" id="mi-ref"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg><span>Actualizar datos</span></button>
+    <button class="mi" id="mi-salir"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg><span>Cerrar sesión</span></button>
+    <div class="mf">Los datos se actualizan cada 10 minutos de 6:00 a 23:00.</div>
+  </aside>
   <main>
     <section class="view on" id="v-hoy"></section>
     <section class="view" id="v-mes"></section>
     <section class="view" id="v-prod"></section>
     <section class="view" id="v-cli"></section>
     <section class="view" id="v-eq"></section>
+    <section class="view" id="v-pres"></section>
+    <section class="view" id="v-pven"></section>
+    <section class="view" id="v-pcos"></section>
+    <section class="view" id="v-pgas"></section>
     <div class="foot">Datos de SAP Business One · <button id="salir">Cerrar sesión</button></div>
   </main>
   <nav>
@@ -185,6 +235,12 @@ nav button.on{color:var(--rojo)}
     <button data-v="prod"><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>Productos</button>
     <button data-v="cli"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15 15.5a5 5 0 016.5 4.5"/></svg>Clientes</button>
     <button data-v="eq"><svg viewBox="0 0 24 24"><path d="M3 20h18M6 16V9M11 16V4M16 16v-6M21 16v-3"/></svg>Equipo</button>
+  </nav>
+  <nav id="nav-p" style="display:none">
+    <button class="on" data-v="pres"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg>Resumen</button>
+    <button data-v="pven"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>Ventas</button>
+    <button data-v="pcos"><svg viewBox="0 0 24 24"><path d="M4 20V8l8-5 8 5v12"/><path d="M4 14h16M10 20v-6M14 20v-6"/></svg>Costos</button>
+    <button data-v="pgas"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg>Gastos</button>
   </nav>
 </div>
 
@@ -300,10 +356,31 @@ document.getElementById('salir').onclick=()=>{ try{localStorage.removeItem(KEY_P
 
 // ---------- navegación ----------
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  b.closest('nav').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+b.dataset.v));
   window.scrollTo({top:0});
 });
+
+// ---------- modo Ventas / Presupuesto ----------
+let modo='ventas';
+const VIEWS_V=['hoy','mes','prod','cli','eq'], VIEWS_P=['pres','pven','pcos','pgas'];
+function setModo(m){
+  modo=m; try{localStorage.setItem('vx_modo',m);}catch(_){}
+  document.querySelectorAll('#menu .mi[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  document.getElementById('brand-sub').textContent = m==='ppto' ? ('Presupuesto'+(D&&D.presupuesto?' '+D.presupuesto.anio:'')) : 'Ventas · Parroli';
+  document.querySelector('nav:not(#nav-p)').style.display = m==='ventas'?'':'none';
+  document.getElementById('nav-p').style.display = m==='ppto'?'':'none';
+  const navAct = m==='ventas' ? document.querySelector('nav:not(#nav-p) button.on') : document.querySelector('#nav-p button.on');
+  const v = navAct ? navAct.dataset.v : (m==='ventas'?'hoy':'pres');
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));
+  window.scrollTo({top:0});
+}
+function menuAbrir(a){ document.body.classList.toggle('menu-open',a); }
+document.getElementById('btn-menu').onclick=()=>menuAbrir(true);
+document.getElementById('menu-bg').onclick=()=>menuAbrir(false);
+document.querySelectorAll('#menu .mi[data-m]').forEach(b=>b.onclick=()=>{ setModo(b.dataset.m); menuAbrir(false); });
+document.getElementById('mi-ref').onclick=()=>{ menuAbrir(false); refrescar(); };
+document.getElementById('mi-salir').onclick=()=>{ try{localStorage.removeItem(KEY_PIN);}catch(_){} location.reload(); };
 
 // ---------- gráficas SVG ----------
 let diaSel=null;
@@ -749,6 +826,217 @@ function vEq(){
   </div>`;
 }
 
+
+// ================= PRESUPUESTO =================
+let pMesSel=null;
+const PCOSTO = new Set(['totalCosto','totalGastos','gVariables','gFijos','depreciacion','gLogistica','gOperativos','gCorporativos','desviaciones','mermas','costoVentas']);
+function cum(real, plan, clave){
+  if(plan==null||real==null||!plan) return '<span class="cum eq">—</span>';
+  // para costos/gastos: cumplir = gastar igual o menos. para CIF (negativo): menos costo = mejor
+  let ratio;
+  if(clave==='cif'){ ratio = plan===0?1:(Math.abs(real)/Math.abs(plan)); }
+  else ratio = real/plan;
+  const esCosto = PCOSTO.has(clave)||clave==='cif';
+  let ok;
+  if(esCosto) ok = ratio<=1.0; else ok = (plan<0 ? real>=plan : ratio>=1.0);
+  const cls = Math.abs(ratio-1)<0.005 ? 'eq' : (ok?'ok':'bad');
+  const txt = (plan<0&&!esCosto) ? (real>=plan?'mejor':'peor') : (fNum1.format(ratio*100)+' %');
+  return `<span class="cum ${cls}">${txt}</span>`;
+}
+function pMeses(){ const P=D.presupuesto; const con=Object.keys(P.meses).filter(m=>P.meses[m].real).sort(); return con.length?con:Object.keys(P.meses).sort(); }
+function pDefault(){ const ms=pMeses(); if(!pMesSel||!ms.includes(pMesSel)) pMesSel=ms[ms.length-1]; return pMesSel; }
+function planDe(it){ return it.parcial && it.planAlDia ? it.planAlDia : it.plan; }
+
+function barrasPR(items, {alto=200, fmt=v=>'$'+(v/1e6).toFixed(1)+'M', clave='ventasNetas', getReal=null, getPlan=null}={}){
+  const W=520,H=alto,padL=6,padR=6,padT=26,padB=24,n=12;
+  const bw=(W-padL-padR)/n;
+  const vals=items.map(it=>({mes:it.mes, plan:getPlan?getPlan(it):(it.plan||{})[clave], real:getReal?getReal(it):(it.real?it.real[clave]:null), parcial:it.parcial}));
+  const max=Math.max(1,...vals.map(v=>Math.max(Math.abs(v.plan||0),Math.abs(v.real||0))));
+  const y=v=>padT+(H-padT-padB)*(1-Math.abs(v)/max);
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">`;
+  vals.forEach((v,i)=>{ const x0=padL+i*bw;
+    out+=`<text x="${x0+bw/2}" y="${H-7}" font-size="11" fill="#7A6F66" text-anchor="middle">${MES3[i]}</text>`;
+    if(v.plan!=null) out+=`<rect x="${x0+3}" y="${y(v.plan)}" width="${bw-6}" height="${H-padB-y(v.plan)}" rx="3" fill="#E6DCC9"/>`;
+    if(v.real!=null){ const col=v.parcial?'#2E7D32':'#B5121B';
+      out+=`<rect x="${x0+8}" y="${y(v.real)}" width="${bw-16}" height="${H-padB-y(v.real)}" rx="3" fill="${col}"/>`;
+      out+=`<text x="${x0+bw/2}" y="${y(v.real)-5}" font-size="10" font-weight="700" fill="${col}" text-anchor="middle">${fmt(v.real)}</text>`; }
+    else if(v.plan!=null) out+=`<text x="${x0+bw/2}" y="${y(v.plan)-5}" font-size="9.5" fill="#9A7A3A" text-anchor="middle">${fmt(v.plan)}</text>`;
+  });
+  return out+'</svg>';
+}
+function lineasPR(items,{alto=180, clave, getReal=null, getPlan=null, fmt=v=>(v*100).toFixed(1)+'%'}={}){
+  const W=520,H=alto,padL=24,padR=20,padT=26,padB=24,n=12;
+  const pl=items.map(it=>getPlan?getPlan(it):(it.plan||{})[clave]), re=items.map(it=>it.real?(getReal?getReal(it):it.real[clave]):null);
+  const vals=[...pl,...re].filter(v=>v!=null&&isFinite(v)); if(!vals.length) return '';
+  const lo=Math.min(...vals),hi=Math.max(...vals),span=Math.max(hi-lo,Math.abs(hi)*0.05||1);
+  const min=lo-span*0.3,max=hi+span*0.35;
+  const x=i=>padL+(W-padL-padR)*i/(n-1), y=v=>padT+(H-padT-padB)*(1-(v-min)/(max-min));
+  const path=a=>a.map((v,i)=>v==null?null:`${x(i)},${y(v)}`).filter(Boolean).join(' ');
+  let out=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">`;
+  for(let i=0;i<n;i++) out+=`<text x="${x(i)}" y="${H-6}" font-size="11" fill="#7A6F66" text-anchor="middle">${MES3[i]}</text>`;
+  out+=`<polyline points="${path(pl)}" fill="none" stroke="#C9A96E" stroke-width="2.5" stroke-dasharray="6 4" stroke-linejoin="round"/>`;
+  out+=`<polyline points="${path(re)}" fill="none" stroke="#B5121B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+  re.forEach((v,i)=>{ if(v==null) return; const col=items[i].parcial?'#2E7D32':'#B5121B'; out+=`<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="${col}"/><text x="${x(i)}" y="${y(v)-9}" font-size="10" font-weight="700" fill="${col}" text-anchor="middle">${fmt(v)}</text>`; });
+  pl.forEach((v,i)=>{ if(v==null) return; if(re[i]==null||Math.abs(y(v)-y(re[i]))>26) out+=`<text x="${x(i)}" y="${y(v)+15}" font-size="9.5" fill="#9A7A3A" text-anchor="middle">${fmt(v)}</text>`; });
+  return out+'</svg>';
+}
+function pItems(){ const P=D.presupuesto; return Object.keys(P.meses).sort().map(m=>({mes:m,...P.meses[m]})); }
+function pSelector(id){ return selectorMes(id, pDefault(), pMeses()); }
+function pTitulo(ym){ const it=D.presupuesto.meses[ym]; return mesNombre(ym)+(it.parcial?` <span class="parcial">PARCIAL · AL DÍA ${it.diaCorte}</span>`:''); }
+function pNotaParcial(it){ return it.parcial?`<div class="tip">Mes en curso: el plan se muestra <b>proporcional al día ${it.diaCorte} de ${it.diasMes}</b> para que la comparación sea justa. Plan del mes completo: ventas netas ${mxnC(it.plan.ventasNetas)}.</div>`:''; }
+
+function vPres(){
+  const P=D.presupuesto; if(!P) return '';
+  const ym=pDefault(), it=P.meses[ym], p=planDe(it), r=it.real, A=P.acumulado;
+  const sinReal=!A.real||A.real.ventasNetas==null; const ratioV=(!sinReal&&A.plan.ventasNetas)?A.real.ventasNetas/A.plan.ventasNetas:0;
+  const tile=(k,lab,costo)=>`<div class="kpi"><div class="v num ${costo?'rojo':(k==='utilidadBruta'||k==='utilidadOperacion'?'verde':'')}" style="font-size:17px">${mxnC(A.real[k]||0)}</div><div class="l">${lab}</div><div class="s">plan ${mxnC(A.plan[k]||0)} · ${cum(A.real[k],A.plan[k],k)}</div></div>`;
+  const fila=(k,lab,{res=false,subs=[]}={})=>{
+    const sub=subs.map(([sk,sl,fuente])=>{ const pv=fuente==='plan'?p[sk]:null, rv=fuente==='plan'?null:(r?r[sk]:null);
+      return `<tr class="sub" data-sub="${k}" style="display:none"><td>${sl}</td><td class="num">${pv!=null?mxnC(pv):'—'}</td><td class="num">${rv!=null?mxnC(rv):'—'}</td><td></td></tr>`; }).join('');
+    return `<tr class="r ${res?'res':''}" data-k="${k}"><td>${lab}</td><td class="num">${mxnC(p[k]||0)}</td><td class="num">${r?mxnC(r[k]||0):'—'}</td><td class="c">${r?cum(r[k],p[k],k):'—'}</td></tr>${sub}`;
+  };
+  const mg=(lab,pv,rv)=>`<tr class="sub" style="display:table-row"><td><i>${lab}</i></td><td class="num">${pct(pv)}</td><td class="num">${rv==null?'—':pct(rv)}</td><td></td></tr>`;
+  const mgP=p.ventasNetas?p.utilidadBruta/p.ventasNetas:null, mgR=r&&r.ventasNetas?r.utilidadBruta/r.ventasNetas:null;
+  const moP=p.ventasNetas?p.utilidadOperacion/p.ventasNetas:null, moR=r&&r.ventasNetas?r.utilidadOperacion/r.ventasNetas:null;
+  return `
+  <div class="card">
+    <h2>Acumulado ${P.anio} · 1 ene – ${fecha(P.hasta).replace(/^\w+ /,'')} · plan vs real</h2>
+    ${sinReal?`<div class="empty">El presupuesto ${P.anio} inicia en enero. Plan anual de ventas netas: <b class="num">${mxnC(Object.values(P.meses).reduce((s,m)=>s+(m.plan.ventasNetas||0),0))}</b>.</div>`:''}
+    <div class="sub" style="margin-bottom:2px">Ventas netas</div>
+    <div class="big num" style="font-size:30px">${mxn(A.real.ventasNetas||0)}</div>
+    <div class="prog"><i class="${ratioV>=1?'ok':''}" style="width:${Math.min(100,ratioV*100)}%"></i></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--gris);margin-bottom:12px"><span>${fNum1.format(ratioV*100)} % del plan</span><span>plan al corte ${mxnC(A.plan.ventasNetas||0)}</span></div>
+    <div class="grid2">
+      ${tile('utilidadBruta','utilidad bruta')}
+      ${tile('totalGastos','gastos de operación',true)}
+      ${tile('utilidadOperacion','utilidad de operación')}
+      ${tile('uai','utilidad antes de impuestos')}
+    </div>
+    <div class="tip">Verde = se cumple (ventas y utilidades iguales o mayores al plan; costos y gastos iguales o menores). El mes en curso entra al acumulado con plan proporcional al día.</div>
+  </div>
+  ${pSelector('pm')}
+  <div class="card">
+    <h2>Estado de resultados · ${pTitulo(ym)}</h2>
+    <table class="er">
+      <thead><tr><th>Concepto</th><th>Plan</th><th>Real</th><th>Cumpl.</th></tr></thead>
+      <tbody>
+        ${fila('ventasNetas','Ventas netas',{res:true,subs:[['ventas','Ventas','real'],['devoluciones','Devoluciones y descuentos','real']]})}
+        ${fila('totalCosto','Total costo de ventas',{subs:[['costoVentas','Costo de ventas','real'],['desviaciones','Desviaciones de costo','real'],['mermas','Mermas, bajas y donaciones','real']]})}
+        ${fila('utilidadBruta','Utilidad bruta',{res:true})}
+        ${mg('% Margen bruto',mgP,mgR)}
+        ${fila('totalGastos','Total gastos de operación',{subs:[['gLogistica','Gastos logística-venta','real'],['gOperativos','Gastos operativos','real'],['gCorporativos','Gastos corporativos','real'],['depreciacion','Depreciación y amortización','real'],['gVariables','Plan · Gastos variables','plan'],['gFijos','Plan · Gastos fijos sin depreciación','plan'],['depreciacion','Plan · Depreciación y amortización','plan']]})}
+        ${fila('utilidadOperacion','Utilidad de operación',{res:true})}
+        ${mg('% Margen operativo',moP,moR)}
+        ${fila('ebitda','EBITDA',{res:true})}
+        ${fila('cif','Costo integral de financiamiento',{subs:[['otrosIngresos','Otros ingresos','real']]})}
+        ${fila('uai','Utilidad antes de impuestos',{res:true})}
+      </tbody>
+    </table>
+    ${pNotaParcial(it)}
+    <div class="tip">Toca un renglón para ver de qué se compone. ${esc(P.fuente)}${P.generado?' · contabilidad actualizada '+esc(String(P.generado).replace('T',' ').slice(0,16)):''}</div>
+  </div>`;
+}
+function vPVen(){
+  const P=D.presupuesto; if(!P) return ''; const items=pItems(); const ym=pDefault(), it=P.meses[ym], p=planDe(it), r=it.real;
+  const fams=it.familias||[]; const totF=fams.reduce((s,f)=>s+f.venta,0);
+  return `
+  ${pSelector('pv')}
+  <div class="card">
+    <h2>Ventas netas · ${pTitulo(ym)}</h2>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><div><div class="sub">Real</div><div class="big num" style="font-size:28px">${r?mxn(r.ventasNetas):'—'}</div></div><div style="text-align:right"><div class="sub">Plan${it.parcial?' al día '+it.diaCorte:''}</div><div class="num" style="font-size:20px;font-weight:800">${mxn(p.ventasNetas)}</div><div style="margin-top:4px">${r?cum(r.ventasNetas,p.ventasNetas,'ventasNetas'):''}</div></div></div>
+    ${r&&it.ventaEntregada!=null?`<div class="tip" style="border-top:1px solid var(--linea);padding-top:8px;margin-top:10px">Ventas netas según contabilidad <b class="num">${mxnC(r.ventasNetas)}</b> · entregado según módulo Ventas <b class="num">${mxnC(it.ventaEntregada)}</b> · diferencia <b class="num">${(r.ventasNetas-it.ventaEntregada>=0?'+':'−')+mxnC(Math.abs(r.ventasNetas-it.ventaEntregada))}</b>: facturas de reserva facturadas y aún no entregadas, o entregas de facturas de meses anteriores. El presupuesto se compara contra contabilidad, igual que el estado de resultados.</div>`:''}
+    <div class="grid2" style="margin-top:12px">
+      <div class="kpi"><div class="v num">${r&&r.kg?fNum.format(Math.round(r.kg))+' kg':'—'}</div><div class="l">kilos</div><div class="s">plan ${fNum.format(Math.round(p.kg||0))} kg · ${r?cum(r.kg,p.kg,'kg'):''}</div></div>
+      <div class="kpi"><div class="v num">${r&&r.precioKg?'$'+fNum1.format(r.precioKg):'—'}</div><div class="l">precio promedio $/kg</div><div class="s">plan $${fNum1.format(it.plan.precioKg||0)}</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Ventas netas por mes · ${P.anio} plan vs real</h2>
+    ${barrasPR(items,{clave:'ventasNetas'})}
+    <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#E6DCC9"></i>plan</span><span><i style="background:#2E7D32"></i>mes en curso</span></div>
+  </div>
+  <div class="card">
+    <h2>Kilos por mes · plan vs real</h2>
+    ${barrasPR(items,{clave:'kg',fmt:v=>fNum.format(Math.round(v/1000))+' t',alto:180})}
+    <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#E6DCC9"></i>plan</span></div>
+  </div>
+  <div class="card">
+    <h2>Precio promedio por kg · plan vs real</h2>
+    ${lineasPR(items,{clave:'precioKg',fmt:v=>'$'+fNum1.format(v)})}
+    <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#C9A96E"></i>plan</span></div>
+    <div class="tip">Si el precio real va abajo del plan, hay que vender más kilos para llegar a la venta planeada.</div>
+  </div>
+  ${fams.length?`<div class="card"><h2>Por familia de queso · ${mesNombre(ym)} (real)</h2>${lista(fams,{sub:'kgsolo',total:totF,comparar:false})}<div class="tip">El presupuesto no está abierto por familia; aquí se ve cómo se compone la venta real del mes.</div></div>`:''}`;
+}
+function vPCos(){
+  const P=D.presupuesto; if(!P) return ''; const items=pItems(); const ym=pDefault(), it=P.meses[ym], p=planDe(it), r=it.real;
+  const mgP=p.ventasNetas?p.utilidadBruta/p.ventasNetas:null, mgR=r&&r.ventasNetas?r.utilidadBruta/r.ventasNetas:null;
+  return `
+  ${pSelector('pc')}
+  <div class="card">
+    <h2>Costo de ventas · ${pTitulo(ym)}</h2>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><div><div class="sub">Real</div><div class="big num" style="font-size:28px;color:#C62828">${r?mxn(r.totalCosto):'—'}</div></div><div style="text-align:right"><div class="sub">Plan${it.parcial?' al día '+it.diaCorte:''}</div><div class="num" style="font-size:20px;font-weight:800">${mxn(p.totalCosto)}</div><div style="margin-top:4px">${r?cum(r.totalCosto,p.totalCosto,'totalCosto'):''}</div></div></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="kpi"><div class="v num verde">${mgR==null?'—':pct(mgR)}</div><div class="l">margen bruto %</div><div class="s">plan ${pct(mgP)}</div></div>
+      <div class="kpi"><div class="v num">${r&&r.costoKg?'$'+fNum1.format(r.costoKg):'—'}</div><div class="l">costo por kg</div><div class="s">plan $${fNum1.format(it.plan.costoKg||0)}</div></div>
+    </div>
+    ${r?`<div class="tip">Desviaciones de costo ${mxnC(r.desviaciones||0)} · Mermas, bajas y donaciones ${mxnC(r.mermas||0)} (incluidas en el total).</div>`:''}
+  </div>
+  <div class="card">
+    <h2>Total costo de ventas por mes · plan vs real</h2>
+    ${barrasPR(items,{clave:'totalCosto'})}
+    <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#E6DCC9"></i>plan</span><span><i style="background:#2E7D32"></i>mes en curso</span></div>
+  </div>
+  <div class="card">
+    <h2>Margen bruto % · plan vs real</h2>
+    ${lineasPR(items,{getPlan:it=>it.plan.ventasNetas?it.plan.utilidadBruta/it.plan.ventasNetas:null,getReal:it=>it.real.ventasNetas?it.real.utilidadBruta/it.real.ventasNetas:null})}
+    <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#C9A96E"></i>plan</span></div>
+  </div>
+  <div class="card">
+    <h2>Costo de ventas por kg · plan vs real</h2>
+    ${lineasPR(items,{clave:'costoKg',fmt:v=>'$'+fNum1.format(v)})}
+    <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#C9A96E"></i>plan</span></div>
+    <div class="tip">Es el costo promedio de todo lo vendido; sube cuando sube la leche o cuando se vende más producto caro. Para el costo por producto, ver Ventas → Productos.</div>
+  </div>`;
+}
+function vPGas(){
+  const P=D.presupuesto; if(!P) return ''; const items=pItems(); const ym=pDefault(), it=P.meses[ym], p=planDe(it), r=it.real;
+  const vn=r?r.ventasNetas:0;
+  const tipos=[['gLogistica','Gastos logística-venta'],['gOperativos','Gastos operativos'],['gCorporativos','Gastos corporativos'],['depreciacion','Depreciación y amortización']];
+  const maxT=Math.max(1,...tipos.map(([k])=>r?r[k]||0:0));
+  const filas=r?tipos.map(([k,l])=>`<li style="grid-template-columns:1fr auto"><div class="nm"><b>${l}</b><span>${vn?fNum1.format(r[k]/vn*100):'—'} % de ventas netas</span><div class="bar"><i style="width:${(r[k]/maxT*100).toFixed(1)}%"></i></div></div><div class="amt"><b class="num">${mxnC(r[k]||0)}</b></div></li>`).join(''):'';
+  return `
+  ${pSelector('pg')}
+  <div class="card">
+    <h2>Gastos de operación · ${pTitulo(ym)}</h2>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><div><div class="sub">Real</div><div class="big num" style="font-size:28px;color:#C62828">${r?mxn(r.totalGastos):'—'}</div></div><div style="text-align:right"><div class="sub">Plan${it.parcial?' al día '+it.diaCorte:''}</div><div class="num" style="font-size:20px;font-weight:800">${mxn(p.totalGastos)}</div><div style="margin-top:4px">${r?cum(r.totalGastos,p.totalGastos,'totalGastos'):''}</div></div></div>
+    <ul class="list" style="margin-top:8px">${filas}</ul>
+    <div class="tip">Plan del mes: gastos variables ${mxnC(p.gVariables)} · gastos fijos sin depreciación ${mxnC(p.gFijos)} · depreciación ${mxnC(p.depreciacion)}. El presupuesto está por tipo variable/fijo; el real, por área como en el ER.</div>
+  </div>
+  <div class="card">
+    <h2>Total gastos de operación por mes · plan vs real</h2>
+    ${barrasPR(items,{clave:'totalGastos'})}
+    <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#E6DCC9"></i>plan</span><span><i style="background:#2E7D32"></i>mes en curso</span></div>
+  </div>
+  <div class="card">
+    <h2>Gastos de operación como % de ventas netas</h2>
+    ${lineasPR(items,{getPlan:it=>it.plan.ventasNetas?it.plan.totalGastos/it.plan.ventasNetas:null,getReal:it=>it.real.ventasNetas?it.real.totalGastos/it.real.ventasNetas:null})}
+    <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#C9A96E"></i>plan</span></div>
+    <div class="tip">Lo importante no es solo gastar menos, sino que el gasto pese menos sobre la venta.</div>
+  </div>
+  <div class="card">
+    <h2>Costo integral de financiamiento · plan vs real</h2>
+    ${barrasPR(items,{clave:'cif',fmt:v=>'$'+(Math.abs(v)/1e3).toFixed(0)+'k',alto:170})}
+    <div class="leg"><span><i style="background:#B5121B"></i>real</span><span><i style="background:#E6DCC9"></i>plan</span></div>
+    <div class="tip">Intereses y comisiones de los créditos. ${r?`${mesNombre(ym)}: real ${mxnC(Math.abs(r.cif||0))} vs plan ${mxnC(Math.abs(p.cif||0))} ${cum(r.cif,p.cif,'cif')}`:''}</div>
+  </div>`;
+}
+function wirePres(){
+  const rerender=()=>{ ['pres','pven','pcos','pgas'].forEach(v=>{ document.getElementById('v-'+v).innerHTML=({pres:vPres,pven:vPVen,pcos:vPCos,pgas:vPGas})[v](); }); wirePres(); };
+  ['pm','pv','pc','pg'].forEach(id=>wireSelector(id, pMeses(), ()=>pMesSel, m=>pMesSel=m, rerender));
+  document.querySelectorAll('#v-pres tr.r').forEach(tr=>tr.onclick=()=>{ document.querySelectorAll(`#v-pres tr.sub[data-sub="${tr.dataset.k}"]`).forEach(s=>s.style.display=s.style.display==='none'?'table-row':'none'); });
+}
+
 function render(){
   document.getElementById('upd').innerHTML=`Actualizado<br><b>${esc(D.generado)}</b>`;
   document.getElementById('v-hoy').innerHTML=vHoy();
@@ -756,6 +1044,11 @@ function render(){
   document.getElementById('v-prod').innerHTML=vProd(); wireProd();
   document.getElementById('v-cli').innerHTML=vCli(); wireCli();
   document.getElementById('v-eq').innerHTML=vEq();
+  const hayP=!!(D.presupuesto&&D.presupuesto.meses);
+  document.getElementById('mi-ppto').style.display=hayP?'':'none';
+  if(hayP){ document.getElementById('v-pres').innerHTML=vPres(); document.getElementById('v-pven').innerHTML=vPVen(); document.getElementById('v-pcos').innerHTML=vPCos(); document.getElementById('v-pgas').innerHTML=vPGas(); wirePres(); }
+  let m='ventas'; try{ m=localStorage.getItem('vx_modo')||'ventas'; }catch(_){}
+  setModo(hayP?m:'ventas');
 }
 
 // service worker (solo si está servido por https o localhost)
