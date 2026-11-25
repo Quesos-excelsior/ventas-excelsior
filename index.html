@@ -174,6 +174,12 @@ svg text{font-family:inherit}
 .chip{display:inline-block;background:var(--crema);border-radius:8px;padding:3px 8px;font-size:12px;color:var(--gris);margin:2px 4px 2px 0}
 .empty{color:var(--gris);font-size:14px;text-align:center;padding:20px}
 .tip{font-size:12px;color:var(--gris);margin-top:8px}
+.desg{margin:6px 0 10px;border-top:1px solid #EADFCB}
+.desg div{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-bottom:1px solid #EADFCB;font-size:13px;color:var(--gris)}
+.desg div b{font-weight:600;color:#2b2b2b}
+.desg div.nc b{color:#C62828}
+.desg div.tot{font-size:14px;color:#2b2b2b;border-bottom:2px solid var(--rojo)}
+.desg div.tot b{font-weight:800;color:var(--rojo)}
 nav{position:fixed;left:0;right:0;bottom:0;background:var(--blanco);border-top:1px solid var(--linea);
   display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:10}
 nav button{flex:1;border:none;background:transparent;color:var(--gris);font-size:11px;font-weight:700;padding:6px 0 2px;border-radius:10px}
@@ -450,6 +456,14 @@ function listaProd(items){
       <div class="amt"><b class="num">${mxnC(it.venta)}</b><span class="delta sm ${it.margenPct==null?'eq':it.margenPct>=0?'up':'dn'}">mg ${pct(it.margenPct)}</span></div>
     </li>`).join('')+'</ul>';
 }
+function desglose(b){
+  const nc=Math.max(0,b.nc||0), bruta=(b.venta||0)+nc;
+  return `<div class="desg">
+    <div><span>Venta bruta facturada</span><b class="num">${mxnC(bruta)}</b></div>
+    <div class="nc"><span>Notas de crédito</span><b class="num">${nc>0?'–'+mxnC(nc):'—'}</b></div>
+    <div class="tot"><span>Venta neta</span><b class="num">${mxnC(b.venta||0)}</b></div>
+  </div>`;
+}
 function kpis4(b, extra){
   return `<div class="grid2">
     <div class="kpi"><div class="v num">${fNum.format(Math.round(b.kg||0))} kg</div><div class="l">kilos</div>${extra&&extra.kg?`<div class="s">${extra.kg}</div>`:''}</div>
@@ -472,8 +486,8 @@ function vHoy(){
     ${hayHoy ? `
     <div class="big num">${mxn(h.venta)}</div>
     <div style="margin:8px 0 12px">${delta(h.venta,hs.venta)} <span class="sub">vs. todo el ${diaSem(hs.fecha)} pasado (${mxnC(hs.venta)})</span></div>
-    ${kpis4(h)}
-    ${h.nc>0?`<div class="tip">Incluye notas de crédito por –${mxnC(h.nc)} (ya restadas en la venta y el margen).</div>`:''}` : `
+    ${desglose(h)}
+    ${kpis4(h)}` : `
     <div class="med" style="color:var(--gris)">Sin facturación todavía</div>
     <div class="sub" style="margin-top:4px">El ${diaSem(hs.fecha)} pasado se vendieron ${mxnC(hs.venta)} en el día.</div>`}
   </div>
@@ -481,8 +495,9 @@ function vHoy(){
     <h2>${esAyer?'Ayer':'Último día cerrado'} · ${fecha(a.fecha)}</h2>
     <div class="big num" style="font-size:30px">${mxn(a.venta)}</div>
     <div style="margin:8px 0 12px">${delta(a.venta,s.venta)} <span class="sub">vs. ${diaSem(s.fecha)} pasado (${mxnC(s.venta)})</span></div>
+    ${desglose(a)}
     ${kpis4(a)}
-    ${a.nc>0?`<div class="tip">Incluye notas de crédito por –${mxnC(a.nc)} (ya restadas en la venta y el margen).</div>`:''}
+    ${a.nc>0&&a.venta<0?`<div class="tip">La venta neta sale negativa porque las notas de crédito del día superan lo facturado.</div>`:''}
   </div>
   <div class="card">
     <h2>Acumulado ${mesNombre(m.mes)}</h2>
@@ -490,7 +505,8 @@ function vHoy(){
     <div style="margin:8px 0 4px">${delta(m.venta,c.venta)} <span class="sub">vs. ${MES3[Number(c.mes.split('-')[1])-1]} al mismo día (${mxnC(c.venta)})</span></div>
     <div class="bar"><i style="width:${avance*100}%"></i></div>
     <div class="sub">${fNum1.format(avance*100)} % de lo vendido en todo ${mesNombre(c.mes)} (${mxnC(D.mesAntCompleto.venta)})</div>
-    <div style="margin-top:12px">${kpis4(m,{kg:`${MES3[Number(c.mes.split('-')[1])-1]} mismo corte: ${fNum.format(Math.round(c.kg))} kg`, mg:`${MES3[Number(c.mes.split('-')[1])-1]} mismo corte: ${pct(c.margenPct)}`})}</div>
+    ${desglose(m)}
+    <div>${kpis4(m,{kg:`${MES3[Number(c.mes.split('-')[1])-1]} mismo corte: ${fNum.format(Math.round(c.kg))} kg`, mg:`${MES3[Number(c.mes.split('-')[1])-1]} mismo corte: ${pct(c.margenPct)}`})}</div>
     <div class="tip">${m.diasConVenta} días con venta · promedio diario ${mxnC(m.promedioDiario)}</div>
   </div>
   <div class="card">
